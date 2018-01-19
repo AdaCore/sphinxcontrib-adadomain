@@ -72,16 +72,16 @@ class AdaObject(ObjectDescription):
 
     def _resolve_module_name(self, signode, modname, name):
         env_modname = self.options.get(
-            'module', self.env.temp_data.get('ada:module', 'ada'))
+            'package', self.env.temp_data.get('ada:package', 'ada'))
         if modname:
             fullname = modname + name
-            signode['module'] = modname[:-1]
+            signode['package'] = modname[:-1]
         else:
             fullname = env_modname + '.' + name
-            signode['module'] = env_modname
+            signode['package'] = env_modname
 
         signode['fullname'] = fullname
-        name_prefix = signode['module'] + '.'
+        name_prefix = signode['package'] + '.'
         signode += addnodes.desc_addname(name_prefix, name_prefix)
         signode += addnodes.desc_name(name, name)
         return fullname
@@ -277,9 +277,9 @@ class AdaObject(ObjectDescription):
             self.indexnode['entries'].append(('single', indextext, name, plain_name, None))
 
 
-class AdaModule(Directive):
+class AdaPackage(Directive):
     """
-    Directive to mark description of a new module.
+    Directive to mark description of a new package.
     """
 
     has_content = False
@@ -297,11 +297,11 @@ class AdaModule(Directive):
         env = self.state.document.settings.env
         modname = self.arguments[0].strip()
         noindex = 'noindex' in self.options
-        env.temp_data['ada:module'] = modname
-        env.domaindata['ada']['modules'][modname] = \
+        env.temp_data['ada:package'] = modname
+        env.domaindata['ada']['packages'][modname] = \
             (env.docname, self.options.get('synopsis', ''),
              self.options.get('platform', ''), 'deprecated' in self.options)
-        targetnode = nodes.target('', '', ids=['module-' + modname], ismod=True)
+        targetnode = nodes.target('', '', ids=['package-' + modname], ismod=True)
         self.state.document.note_explicit_target(targetnode)
         ret = [targetnode]
         # XXX this behavior of the module directive is a mess...
@@ -314,16 +314,16 @@ class AdaModule(Directive):
         # the synopsis isn't printed; in fact, it is only used in the
         # modindex currently
         if not noindex:
-            indextext = _('%s (module)') % modname
+            indextext = _('%s (package)') % modname
             inode = addnodes.index(entries=[('single', indextext,
-                                             'module-' + modname, modname, None)])
+                                             'package-' + modname, modname, None)])
             ret.append(inode)
         return ret
 
-class AdaCurrentModule(Directive):
+class AdaCurrentPackage(Directive):
     """
     This directive is just to tell Sphinx that we're documenting
-    stuff in module foo, but links to module foo won't lead here.
+    stuff in package foo, but links to package foo won't lead here.
     """
 
     has_content = False
@@ -336,14 +336,14 @@ class AdaCurrentModule(Directive):
         env = self.state.document.settings.env
         modname = self.arguments[0].strip()
         if modname == 'None':
-            env.temp_data['ada:module'] = None
+            env.temp_data['ada:package'] = None
         else:
-            env.temp_data['ada:module'] = modname
+            env.temp_data['ada:package'] = modname
         return []
 
 class AdaXRefRole(XRefRole):
     def process_link(self, env, refnode, has_explicit_title, title, target):
-        refnode['ada:module'] = env.temp_data.get('ada:module')
+        refnode['ada:package'] = env.temp_data.get('ada:package')
         if not has_explicit_title:
             title = title.lstrip(':')   # only has a meaning for the target
             target = target.lstrip('~') # only has a meaning for the title
@@ -356,14 +356,14 @@ class AdaXRefRole(XRefRole):
                     title = title[colon+1:]
         return title, target
 
-class AdaModuleIndex(Index):
+class AdaPackageIndex(Index):
     """
-    Index subclass to provide the Ada module index.
+    Index subclass to provide the Ada package index.
     """
 
     name = 'modindex'
-    localname = l_('Ada Module Index')
-    shortname = l_('Ada modules')
+    localname = l_('Ada Package Index')
+    shortname = l_('Ada packages')
 
     def generate(self, docnames=None):
         content = {}
@@ -372,7 +372,7 @@ class AdaModuleIndex(Index):
         ignores = sorted(ignores, key=len, reverse=True)
         # list of all modules, sorted by module name
         # (Python 3 has no iteritems, so use items.)
-        modules = sorted(self.domain.data['modules'].items(),
+        modules = sorted(self.domain.data['packages'].items(),
                          key=lambda x: x[0].lower())
         # sort out collapsable modules
         prev_modname = ''
@@ -411,7 +411,7 @@ class AdaModuleIndex(Index):
 
             qualifier = deprecated and _('Deprecated') or ''
             entries.append([stripped + modname, subtype, docname,
-                            'module-' + stripped + modname, platforms,
+                            'package-' + stripped + modname, platforms,
                             qualifier, synopsis])
             prev_modname = modname
 
@@ -434,15 +434,15 @@ class AdaDomain(Domain):
         'function':  ObjType(l_('function'),  'func'),
         'procedure': ObjType(l_('procedure'), 'proc'),
         'type':      ObjType(l_('type'),      'type'),
-        'module':    ObjType(l_('module'),    'mod'),
+        'package':   ObjType(l_('package'),   'pkg'),
     }
 
     directives = {
-        'function':      AdaObject,
-        'procedure':     AdaObject,
-        'type':        AdaObject,
-        'module':        AdaModule,
-        'currentmodule': AdaCurrentModule,
+        'function':       AdaObject,
+        'procedure':      AdaObject,
+        'type':           AdaObject,
+        'package':        AdaPackage,
+        'currentpackage': AdaCurrentPackage,
     }
     roles = {
         'func':   AdaXRefRole(),
@@ -454,10 +454,10 @@ class AdaDomain(Domain):
         'objects': {},     # fullname -> docname, objtype
         'functions' : {},  # fullname -> arity -> (targetname, docname)
         'procedures' : {}, # fullname -> arity -> (targetname, docname)
-        'modules': {},     # modname -> docname, synopsis, platform, deprecated
+        'packages': {},    # packagename -> docname, synopsis, platform, deprecated
     }
     indices = [
-        AdaModuleIndex,
+        AdaPackageIndex,
     ]
 
     def clear_doc(self, docname):
@@ -467,7 +467,7 @@ class AdaDomain(Domain):
         for fullname, (fn, _) in list(self.data['objects'].items()):
             if fn == docname:
                 del self.data['objects'][fullname]
-        for modname, (fn, _, _, _) in list(self.data['modules'].items()):
+        for modname, (fn, _, _, _) in list(self.data['packages'].items()):
             if fn == docname:
                 del self.data['modules'][modname]
         for fullname, funcs in list(self.data['functions'].items()):
@@ -520,7 +520,7 @@ class AdaDomain(Domain):
                      typ, target, node, contnode):
         if typ == 'mod' and target in self.data['modules']:
             docname, synopsis, platform, deprecated = \
-                self.data['modules'].get(target, ('','','', ''))
+                self.data['packages'].get(target, ('','','', ''))
             if not docname:
                 return None
             else:
@@ -530,7 +530,7 @@ class AdaDomain(Domain):
                 return make_refnode(builder, fromdocname, docname,
                                     'module-' + target, contnode, title)
         else:
-            modname = node.get('ada:module')
+            modname = node.get('ada:package')
             searchorder = node.hasattr('refspecific') and 1 or 0
             name, obj = self._find_obj(env, modname, target, typ, searchorder)
             if not obj:
