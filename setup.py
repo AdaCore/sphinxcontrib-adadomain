@@ -12,7 +12,7 @@ This package contains the adadomain Sphinx extension.
 
 '''
 
-requires = ['Sphinx>=1.0']
+requires = ['Sphinx>=1.4']
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
