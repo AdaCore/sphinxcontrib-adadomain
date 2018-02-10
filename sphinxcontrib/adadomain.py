@@ -113,8 +113,8 @@ class AdaObject(ObjectDescription):
 
         stack = [signode[-1]]
         counters = [0, 0]
-        for token in string.split(arglist, ';'):
-            pieces = string.split(token, ':')
+        for token in arglist.split(';'):
+            pieces = token.split(':')
             name = pieces[0].strip()
             stack[-1] += addnodes.desc_parameter(name, name + " : " + pieces[1].strip())
 
@@ -159,8 +159,8 @@ class AdaObject(ObjectDescription):
 
         stack = [signode[-1]]
         counters = [0, 0]
-        for token in string.split(arglist, ';'):
-            pieces = string.split(token, ':')
+        for token in arglist.split(';'):
+            pieces = token.split(':')
             name = pieces[0].strip()
             stack[-1] += addnodes.desc_parameter(name, name + " : " + pieces[1].strip())
             if len(stack) == 1:
@@ -215,7 +215,7 @@ class AdaObject(ObjectDescription):
 
 
     def add_target_and_index(self, name, sig, signode):
-        pieces = string.split(name, '.')
+        pieces = name.split('.')
         if name not in self.state.document.ids:
             signode['names'].append(name)
             signode['ids'].append(name)
