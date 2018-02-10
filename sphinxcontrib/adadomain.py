@@ -469,7 +469,7 @@ class AdaDomain(Domain):
                 del self.data['objects'][fullname]
         for modname, (fn, _, _, _) in list(self.data['packages'].items()):
             if fn == docname:
-                del self.data['modules'][modname]
+                del self.data['packages'][modname]
         for fullname, funcs in list(self.data['functions'].items()):
             for arity, (fn, _) in list(funcs.items()):
                 if fn == docname:
@@ -518,7 +518,7 @@ class AdaDomain(Domain):
 
     def resolve_xref(self, env, fromdocname, builder,
                      typ, target, node, contnode):
-        if typ == 'mod' and target in self.data['modules']:
+        if typ == 'mod' and target in self.data['packages']:
             docname, synopsis, platform, deprecated = \
                 self.data['packages'].get(target, ('','','', ''))
             if not docname:
