@@ -1,56 +1,58 @@
-# -*- coding: utf-8 -*-
 """
-    sphinxcontrib.adadomain
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ada domain for sphinx.
 
-    Ada domain.
+:copyright: Copyright 2010 by Tero Koskinen.
+:copyright: Copyright 2020 by AdaCore.
+:license: BSD, see LICENSE for details
 
-    :copyright: Copyright 2010 by Tero Koskinen
-    :license: BSD, see LICENSE for details.
-
-    Some parts of the code copied from erlangdomain by SHIBUKAWA Yoshiki.
+Some parts of the code copied from erlangdomain by SHIBUKAWA Yoshiki.
 """
 
-from __future__ import print_function
-
+import logging
+from functools import lru_cache
 import re
-import string
+from typing import cast, Any, Dict, NamedTuple, Iterator, Tuple
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers.rst import Directive
 
-from sphinx import addnodes, version_info
-from sphinx.roles import XRefRole
-from sphinx.locale import l_, _
+from sphinx import addnodes
 from sphinx.directives import ObjectDescription
-from sphinx.domains import Domain, ObjType, Index
-from sphinx.util.nodes import make_refnode
+from sphinx.domains import Domain, Index, ObjType
+from sphinx.locale import _, __
+from sphinx.roles import XRefRole
 from sphinx.util.docfields import Field, TypedField
+from sphinx.util.nodes import make_refnode, make_id
 
-# RE to split at word boundaries
-wsplit_re = re.compile(r'(\W+)')
+try:
+    import libadalang as lal
 
-# REs for Ada function signatures
-ada_func_sig_re = re.compile(
-    r'''^function\s+([\w.]*\.)?
-                   (\w+)\s*
-                   (\((.*)\))?\s*
-                   return\s+(\w+)\s*
-                   (is\s+abstract)?;$
-          ''', re.VERBOSE)
+    USE_LAL = True
+except ImportError:
+    USE_LAL = False
 
-ada_proc_sig_re = re.compile(
-    r'''^procedure\s+([\w.]*\.)?
-                   (\w+)\s*
-                   (\((.*)\))?\s*
-                   (is\s+abstract)?\s*;$
-              ''', re.VERBOSE)
+logger = logging.getLogger(__name__)
 
-ada_type_sig_re = re.compile(
-    r'''^type\s+(\w+)\s+is(.*);$''', re.VERBOSE)
+ada_type_sig_re = re.compile(r"^type\s+(\w+)", re.VERBOSE)
+ada_object_sig_re = re.compile(r"^(\w+)\s+(:\s+.+)", re.VERBOSE)
+ada_package_inst_sig_re = re.compile(
+    r"^package\s+(\w+)\s+is\s+new\s+([\w\.]+)\s*", re.VERBOSE
+)
+ada_subp_sig_re = re.compile(
+    r"^(procedure|function)\s+(\w+|\".*?\")\s*(.*)", re.VERBOSE
+)
 
-ada_paramlist_re = re.compile(r'(;)')
+ObjectEntry = NamedTuple(
+    "ObjectEntry", [("docname", str), ("node_id", str), ("objtype", str)]
+)
+
+
+# Due to the fact that parsing subp specs with LAL is pretty slow, we have two
+# paths here, a fast one and a slow one. The fast one doesn't use LAL at all.
+# It would be worth profiling to see what is the cause of this slowness.
+FAST_PATH = False
+
 
 class AdaObject(ObjectDescription):
     """
@@ -58,223 +60,275 @@ class AdaObject(ObjectDescription):
     """
 
     doc_field_types = [
-        TypedField('parameter', label=l_('Parameters'),
-                   names=('param', 'parameter', 'arg', 'argument'),
-                    typerolename='type', typenames=('type',)),
-        Field('returnvalue', label=l_('Returns'), has_arg=False,
-              names=('returns', 'return')),
-        Field('returntype', label=l_('Return type'), has_arg=False,
-              names=('rtype',)),
+        TypedField(
+            "parameter",
+            label=_("Parameters"),
+            names=("param", "parameter", "arg", "argument"),
+            typerolename="type",
+            typenames=("type",),
+        ),
+        TypedField(
+            "component",
+            label=_("Components"),
+            names=("component", "comp"),
+            typerolename="type",
+            typenames=("type",),
+        ),
+        TypedField(
+            "discriminant",
+            label=_("Discriminants"),
+            names=("discriminant", "discr"),
+            typerolename="type",
+            typenames=("type",),
+        ),
+        Field(
+            "returnvalue",
+            label=_("Returns"),
+            has_arg=False,
+            names=("returns", "return"),
+        ),
+        Field(
+            "instpkg",
+            label=_("Instantiated generic package"),
+            has_arg=False,
+            names=("instpkg",),
+            bodyrolename="type",
+        ),
+        Field(
+            "defval",
+            label=_("Default value"),
+            has_arg=False,
+            names=("defval",),
+            bodyrolename="type",
+        ),
+        Field(
+            "objtype",
+            label=_("Object type"),
+            has_arg=False,
+            names=("objtype",),
+            bodyrolename="type",
+        ),
+        Field(
+            "renames",
+            label=_("Renames"),
+            has_arg=False,
+            names=("renames",),
+            bodyrolename="type",
+        ),
     ]
 
+    option_spec = {
+        "package": directives.unchanged,
+    }
+
     def needs_arglist(self):
-        return self.objtype == 'function' or self.objtype == 'procedure'
+        return self.objtype == "function" or self.objtype == "procedure"
 
     def _resolve_module_name(self, signode, modname, name):
         env_modname = self.options.get(
-            'package', self.env.temp_data.get('ada:package', 'ada'))
+            "package", self.env.temp_data.get("ada:package", "")
+        )
         if modname:
             fullname = modname + name
-            signode['package'] = modname[:-1]
+            signode["package"] = modname[:-1]
         else:
-            fullname = env_modname + '.' + name
-            signode['package'] = env_modname
+            fullname = env_modname + "." + name if env_modname else name
+            signode["package"] = env_modname
 
-        signode['fullname'] = fullname
-        name_prefix = signode['package'] + '.'
-        signode += addnodes.desc_addname(name_prefix, name_prefix)
+        signode["fullname"] = fullname
+        # name_pfx = (signode["package"] + ".") if signode["package"] else ""
+        # signode += addnodes.desc_addname(name_pfx, name_pfx)
         signode += addnodes.desc_name(name, name)
         return fullname
 
-    def _handle_function_signature(self, sig, signode):
-        m = ada_func_sig_re.match(sig)
+    @lru_cache()
+    def lal_context(self):
+        assert USE_LAL, "LAL is not available"
+
+        return lal.AnalysisContext(unit_provider=lal.UnitProvider.auto([]))
+
+    def make_refnode(self, target, cont_node_type):
+        refnode = addnodes.pending_xref(
+            "",
+            refdomain="ada",
+            refexplicit=False,
+            reftype="type",
+            reftarget=target,
+        )
+        env_modname = self.options.get(
+            "package", self.env.temp_data.get("ada:package", "")
+        )
+        refnode["ada:package"] = env_modname
+        refnode += cont_node_type("", target)
+        return refnode
+
+    def handle_subp_sig_fast(self, sig, signode):
+        m = ada_subp_sig_re.match(sig)
         if m is None:
-            print("m did not match the function")
+            raise Exception(f"m did not match for sig {sig}")
+
+        kind, name, sig = m.groups()
+
+        kind += " "
+
+        signode += addnodes.desc_annotation(kind, kind)
+        fullname = self._resolve_module_name(signode, "", name)
+        signode += addnodes.desc_annotation(sig, sig)
+        return fullname
+
+    def handle_subp_sig(self, sig, signode):
+
+        assert USE_LAL, "LAL is not available"
+
+        import timeit
+
+        start_time = timeit.default_timer()
+        try:
+            subp_spec_unit = self.lal_context().get_from_buffer(
+                "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
+            )
+        except Exception:
+            raise
+
+        elapsed = timeit.default_timer() - start_time
+        print(elapsed)
+        subp_spec: lal.SubpSpec = subp_spec_unit.root.cast(lal.SubpSpec)
+
+        if subp_spec is None:
+            logger.warning("Couldn't parse the subp spec")
             raise ValueError
 
-        modname, name, dummy, arglist, returntype, abstract = m.groups()
+        is_func = subp_spec.f_subp_returns is not None
+
+        modname, name, returntype = (
+            "",
+            subp_spec.f_subp_name.text,
+            subp_spec.f_subp_returns.text if is_func else "",
+        )
+
+        kind = "function " if is_func else "procedure "
+        signode += addnodes.desc_annotation(kind, kind)
+
         fullname = self._resolve_module_name(signode, modname, name)
 
-        if not arglist:
-            if self.needs_arglist():
-                # for functions and procedures, add an empty parameter list
-                new_node = addnodes.desc_parameterlist()
-                new_node.child_text_separator = '; '
-                signode += new_node
-            if returntype:
-                signode += addnodes.desc_returns(returntype, returntype)
-            return fullname
+        signode += nodes.Text(" ")
 
-        signode += nodes.Text(' ')
+        param_list = addnodes.desc_parameterlist()
+        param_list.child_text_separator = "; "
+        signode += param_list
 
-        new_node = addnodes.desc_parameterlist()
-        new_node.child_text_separator = '; '
-        signode += new_node
+        if subp_spec.f_subp_params:
+            for p in subp_spec.f_subp_params.f_params:
+                param = addnodes.desc_parameter()
+                param_list += param
+                for i, name in enumerate(p.f_ids):
+                    param += addnodes.desc_sig_name("", name.text)
+                    if i + 1 < len(p.f_ids):
+                        param += addnodes.desc_sig_punctuation("", ", ")
+                param += addnodes.desc_sig_punctuation("", " : ")
 
-        stack = [signode[-1]]
-        counters = [0, 0]
-        for token in arglist.split(';'):
-            pieces = token.split(':')
-            name = pieces[0].strip()
-            stack[-1] += addnodes.desc_parameter(name, name + " : " + pieces[1].strip())
+                refnode = self.make_refnode(
+                    p.f_type_expr.text, addnodes.desc_sig_name
+                )
+                param += refnode
 
-            if len(stack) == 1:
-                counters[0] += 1
-            else:
-                counters[1] += 1
-
-        if len(stack) != 1:
-            raise ValueError
-        if not counters[1]:
-            fullname = '%s/%d' % (fullname, counters[0])
-        else:
-            fullname = '%s/%d..%d' % (fullname, counters[0], sum(counters))
         if returntype:
-            signode += addnodes.desc_returns(returntype,returntype)
+            signode += self.make_refnode(returntype, addnodes.desc_returns)
+
         return fullname
 
-
-        
-    def _handle_procedure_signature(self, sig, signode):
-        m = ada_proc_sig_re.match(sig)
-        if m is None:
-            print("m did not match")
-            raise ValueError
-
-        modname, name, dummy, arglist, abstract = m.groups()
-        fullname = self._resolve_module_name(signode, modname, name)
-
-        if not arglist:
-            if self.needs_arglist():
-                # for functions and procedures, add an empty parameter list
-                newnode = addnodes.desc_parameterlist()
-                newnode.child_text_separator = '; '
-                signode += newnode
-
-        signode += nodes.Text(' ')
-
-        newnode = addnodes.desc_parameterlist()
-        newnode.child_text_separator = '; '
-        signode += newnode
-
-        stack = [signode[-1]]
-        counters = [0, 0]
-        for token in arglist.split(';'):
-            pieces = token.split(':')
-            name = pieces[0].strip()
-            stack[-1] += addnodes.desc_parameter(name, name + " : " + pieces[1].strip())
-            if len(stack) == 1:
-                counters[0] += 1
-            else:
-                counters[1] += 1
-
-        if len(stack) != 1:
-            raise ValueError
-        if not counters[1]:
-            fullname = '%s/%d' % (fullname, counters[0])
-        else:
-            fullname = '%s/%d..%d' % (fullname, counters[0], sum(counters))
-        return fullname
-
-    def _handle_type_signature(self, sig, signode):
+    def handle_type_sig(self, sig, signode):
         m = ada_type_sig_re.match(sig)
         if m is None:
-            print("m did not match")
-            raise ValueError
+            raise Exception(f"m did not match for sig {sig}")
 
-        name, value = m.groups()
-        fullname = self._resolve_module_name(signode, '', name)
-        
-        # signode += addnodes.desc_parameterlist()
+        name = m.groups()[0]
 
-        # stack = [signode[-1]]
+        signode += addnodes.desc_annotation("type ", "type ")
+        fullname = self._resolve_module_name(signode, "", name)
 
-        # signode += addnodes.desc_type(name, name + " is " + value)
-        signode += addnodes.desc_type(name, '')
-
+        signode += addnodes.desc_type(name, "")
         return fullname
 
+    def handle_object_sig(self, sig, signode):
+        m = ada_object_sig_re.match(sig)
+        if m is None:
+            raise Exception(f"m did not match for sig {sig}")
+
+        name, descr = m.groups()
+        descr = " " + descr
+
+        fullname = self._resolve_module_name(signode, "", name)
+        signode += addnodes.desc_annotation(descr, descr)
+
+        signode += addnodes.desc_type(name, "")
+        return fullname
+
+    def handle_exception_sig(self, sig, signode):
+        fullname = self._resolve_module_name(signode, "", sig)
+        signode += addnodes.desc_annotation(": exception", ": exception")
+        return fullname
+
+    def handle_gen_package_inst(self, sig, signode):
+        m = ada_package_inst_sig_re.match(sig)
+        if m is None:
+            raise Exception(f"m did not match for sig {sig}")
+        name, inst = m.groups()
+        signode += addnodes.desc_annotation("package ", "package ")
+        fullname = self._resolve_module_name(signode, "", name)
+        signode += addnodes.desc_name(" ", " ")
+        signode += addnodes.desc_annotation(" is new ", " is new ")
+        signode += addnodes.desc_name(inst, inst)
+        return fullname
 
     def handle_signature(self, sig, signode):
-        if sig.startswith('function'):
-            return self._handle_function_signature (sig, signode)
-        elif sig.startswith('type'):
-            return self._handle_type_signature (sig, signode)
-        else: # sig.startswith('procedure'):
-            return self._handle_procedure_signature (sig, signode)
-
-    def _get_index_text(self, name):
-        if self.objtype == 'function':
-            return _('%s (Ada function)') % name
-        elif self.objtype == 'procedure':
-            return _('%s (Ada procedure)') % name
-        elif self.objtype == 'type':
-            return _('%s (Ada type)') % name
-        else:
-            return ''
-
-
-    def add_target_and_index(self, name, sig, signode):
-        pieces = name.split('.')
-        if name not in self.state.document.ids:
-            signode['names'].append(name)
-            signode['ids'].append(name)
-            signode['first'] = (not self.names)
-            self.state.document.note_explicit_target(signode)
-            if self.objtype =='function':
-                finv = self.env.domaindata['ada']['functions']
-                fname, arity = name.split('/')
-                if '..' in arity:
-                    first, last = map(int, arity.split('..'))
-                else:
-                    first = last = int(arity)
-                for arity_index in range(first, last+1):
-                    if fname in finv and arity_index in finv[fname]:
-                        self.env.warn(
-                            self.env.docname,
-                            ('duplicate Ada function description'
-                             'of %s, ') % name +
-                            'other instance in ' +
-                            self.env.doc2path(finv[fname][arity_index][0]),
-                            self.lineno)
-                    arities = finv.setdefault(fname, {})
-                    arities[arity_index] = (self.env.docname, name)
-            if self.objtype == 'procedure':
-                finv = self.env.domaindata['ada']['procedures']
-                fname, arity = name.split('/')
-                if '..' in arity:
-                    first, last = map(int, arity.split('..'))
-                else:
-                    first = last = int(arity)
-                for arity_index in range(first, last+1):
-                    if fname in finv and arity_index in finv[fname]:
-                        self.env.warn(
-                            self.env.docname,
-                            ('duplicate Ada procedure description'
-                             'of %s, ') % name +
-                            'other instance in ' +
-                            self.env.doc2path(finv[fname][arity_index][0]),
-                            self.lineno)
-                    arities = finv.setdefault(fname, {})
-                    arities[arity_index] = (self.env.docname, name)
+        if self.objtype in ["function", "procedure"]:
+            if FAST_PATH or not USE_LAL:
+                return self.handle_subp_sig_fast(sig, signode)
             else:
-                oinv = self.env.domaindata['ada']['objects']
-                if name in oinv:
-                    self.env.warn(
-                        self.env.docname,
-                        'duplicate Ada object description of %s, ' % name +
-                        'other instance in ' + self.env.doc2path(oinv[name][0]),
-                        self.lineno)
-                oinv[name] = (self.env.docname, self.objtype)
+                return self.handle_subp_sig(sig, signode)
+        elif self.objtype == "type":
+            return self.handle_type_sig(sig, signode)
+        elif self.objtype == "object":
+            return self.handle_object_sig(sig, signode)
+        elif self.objtype == "exception":
+            return self.handle_exception_sig(sig, signode)
+        elif self.objtype == "generic-package-instantiation":
+            return self.handle_gen_package_inst(sig, signode)
+        else:
+            raise Exception(f"Unhandled ada object: {self.objtype} {sig}")
 
-        indextext = self._get_index_text(name)
-        if indextext:
-            self.indexnode['entries'].append(('single', indextext, name, name, None))
+    def get_index_text(self, name):
+        if self.objtype == "function":
+            return _("%s (Ada function)") % name
+        elif self.objtype == "procedure":
+            return _("%s (Ada procedure)") % name
+        elif self.objtype == "type":
+            return _("%s (Ada type)") % name
+        else:
+            return ""
 
-        plain_name = pieces[-1]
-        indextext = self._get_index_text(plain_name)
+    def add_target_and_index(
+        self, name: str, sig: str, signode: addnodes.desc_signature
+    ) -> None:
+        node_id = make_id(self.env, self.state.document, "", name)
+        signode["ids"].append(node_id)
+
+        # Assign old styled node_id(name) not to break old hyperlinks (if
+        # possible) Note: Will removed in Sphinx-5.0 (RemovedInSphinx50Warning)
+        if node_id != name and name not in self.state.document.ids:
+            signode["ids"].append(name)
+
+        self.state.document.note_explicit_target(signode)
+
+        domain = cast(AdaDomain, self.env.get_domain("ada"))
+        domain.note_object(name, self.objtype, node_id, location=signode)
+
+        indextext = self.get_index_text(name)
         if indextext:
-            self.indexnode['entries'].append(('single', indextext, name, plain_name, None))
+            self.indexnode["entries"].append(
+                ("single", indextext, node_id, "", None)
+            )
 
 
 class AdaPackage(Directive):
@@ -287,38 +341,47 @@ class AdaPackage(Directive):
     optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {
-        'platform': lambda x: x,
-        'synopsis': lambda x: x,
-        'noindex': directives.flag,
-        'deprecated': directives.flag,
+        "platform": lambda x: x,
+        "synopsis": lambda x: x,
+        "noindex": directives.flag,
+        "deprecated": directives.flag,
     }
 
     def run(self):
         env = self.state.document.settings.env
         modname = self.arguments[0].strip()
-        noindex = 'noindex' in self.options
-        env.temp_data['ada:package'] = modname
-        env.domaindata['ada']['packages'][modname] = \
-            (env.docname, self.options.get('synopsis', ''),
-             self.options.get('platform', ''), 'deprecated' in self.options)
-        targetnode = nodes.target('', '', ids=['package-' + modname], ismod=True)
+        noindex = "noindex" in self.options
+        env.temp_data["ada:package"] = modname
+        env.domaindata["ada"]["packages"][modname] = (
+            env.docname,
+            self.options.get("synopsis", ""),
+            self.options.get("platform", ""),
+            "deprecated" in self.options,
+        )
+        targetnode = nodes.target(
+            "", "", ids=["package-" + modname], ismod=True
+        )
         self.state.document.note_explicit_target(targetnode)
         ret = [targetnode]
         # XXX this behavior of the module directive is a mess...
-        if 'platform' in self.options:
-            platform = self.options['platform']
+        if "platform" in self.options:
+            platform = self.options["platform"]
             node = nodes.paragraph()
-            node += nodes.emphasis('', _('Platforms: '))
+            node += nodes.emphasis("", _("Platforms: "))
             node += nodes.Text(platform, platform)
             ret.append(node)
         # the synopsis isn't printed; in fact, it is only used in the
-        # modindex currently
+        # modindex currently.
         if not noindex:
-            indextext = _('%s (package)') % modname
-            inode = addnodes.index(entries=[('single', indextext,
-                                             'package-' + modname, modname, None)])
+            indextext = _("%s (package)") % modname
+            inode = addnodes.index(
+                entries=[
+                    ("single", indextext, "package-" + modname, modname, None)
+                ]
+            )
             ret.append(inode)
         return ret
+
 
 class AdaCurrentPackage(Directive):
     """
@@ -335,47 +398,54 @@ class AdaCurrentPackage(Directive):
     def run(self):
         env = self.state.document.settings.env
         modname = self.arguments[0].strip()
-        if modname == 'None':
-            env.temp_data['ada:package'] = None
+        if modname == "None":
+            env.temp_data["ada:package"] = None
         else:
-            env.temp_data['ada:package'] = modname
+            env.temp_data["ada:package"] = modname
         return []
 
+
 class AdaXRefRole(XRefRole):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def process_link(self, env, refnode, has_explicit_title, title, target):
-        refnode['ada:package'] = env.temp_data.get('ada:package')
+        pkg = env.temp_data.get("ada:package")
+        refnode["ada:package"] = pkg
         if not has_explicit_title:
-            title = title.lstrip(':')   # only has a meaning for the target
-            target = target.lstrip('~') # only has a meaning for the title
+            title = title.lstrip(":")  # only has a meaning for the target
+            target = target.lstrip("~")  # only has a meaning for the title
             # if the first character is a tilde, don't display the module/class
-            # parts of the contents
-            if title[0:1] == '~':
+            # parts of the contents.
+            if title[0:1] == "~":
                 title = title[1:]
-                colon = title.rfind(':')
+                colon = title.rfind(":")
                 if colon != -1:
-                    title = title[colon+1:]
+                    title = title[colon + 1:]
         return title, target
+
 
 class AdaPackageIndex(Index):
     """
     Index subclass to provide the Ada package index.
     """
 
-    name = 'modindex'
-    localname = l_('Ada Package Index')
-    shortname = l_('Ada packages')
+    name = "modindex"
+    localname = _("Ada Package Index")
+    shortname = _("Ada packages")
 
     def generate(self, docnames=None):
         content = {}
         # list of prefixes to ignore
-        ignores = self.domain.env.config['modindex_common_prefix']
+        ignores = self.domain.env.config["modindex_common_prefix"]
         ignores = sorted(ignores, key=len, reverse=True)
         # list of all modules, sorted by module name
-        # (Python 3 has no iteritems, so use items.)
-        modules = sorted(self.domain.data['packages'].items(),
-                         key=lambda x: x[0].lower())
+        # (Python 3 has no iteritems, so use items).
+        modules = sorted(
+            self.domain.data["packages"].items(), key=lambda x: x[0].lower()
+        )
         # sort out collapsable modules
-        prev_modname = ''
+        prev_modname = ""
         num_toplevels = 0
         for modname, (docname, synopsis, platforms, deprecated) in modules:
             if docnames and docname not in docnames:
@@ -387,15 +457,15 @@ class AdaPackageIndex(Index):
                     stripped = ignore
                     break
             else:
-                stripped = ''
+                stripped = ""
 
             # we stripped the whole module name?
             if not modname:
-                modname, stripped = stripped, ''
+                modname, stripped = stripped, ""
 
             entries = content.setdefault(modname[0].lower(), [])
 
-            package = modname.split(':')[0]
+            package = modname.split(":")[0]
             if package != modname:
                 # it's a submodule
                 if prev_modname == package:
@@ -403,146 +473,145 @@ class AdaPackageIndex(Index):
                     entries[-1][1] = 1
                 elif not prev_modname.startswith(package):
                     # submodule without parent in list, add dummy entry
-                    entries.append([stripped + package, 1, '', '', '', '', ''])
+                    entries.append([stripped + package, 1, "", "", "", "", ""])
                 subtype = 2
             else:
                 num_toplevels += 1
                 subtype = 0
 
-            qualifier = deprecated and _('Deprecated') or ''
-            entries.append([stripped + modname, subtype, docname,
-                            'package-' + stripped + modname, platforms,
-                            qualifier, synopsis])
+            qualifier = deprecated and _("Deprecated") or ""
+            entries.append(
+                [
+                    stripped + modname,
+                    subtype,
+                    docname,
+                    "package-" + stripped + modname,
+                    platforms,
+                    qualifier,
+                    synopsis,
+                ]
+            )
             prev_modname = modname
 
         # apply heuristics when to collapse modindex at page load:
         # only collapse if number of toplevel modules is larger than
-        # number of submodules
+        # number of submodules.
         collapse = len(modules) - num_toplevels < num_toplevels
 
         # sort by first letter
-        # (Python 3 has no iteritems, so use items.)
+        # (Python 3 has no iteritems, so use items).
         content = sorted(content.items())
 
         return content, collapse
 
+
 class AdaDomain(Domain):
     """Ada language domain."""
-    name = 'ada'
-    label = 'Ada'
+
+    name = "ada"
+    label = "Ada"
     object_types = {
-        'function':  ObjType(l_('function'),  'func'),
-        'procedure': ObjType(l_('procedure'), 'proc'),
-        'type':      ObjType(l_('type'),      'type'),
-        'package':   ObjType(l_('package'),   'pkg'),
+        "function": ObjType(_("function"), "func"),
+        "procedure": ObjType(_("procedure"), "proc"),
+        "type": ObjType(_("type"), "type"),
+        "package": ObjType(_("package"), "pkg"),
     }
 
     directives = {
-        'function':       AdaObject,
-        'procedure':      AdaObject,
-        'type':           AdaObject,
-        'package':        AdaPackage,
-        'currentpackage': AdaCurrentPackage,
+        "function": AdaObject,
+        "procedure": AdaObject,
+        "type": AdaObject,
+        "package": AdaPackage,
+        "currentpackage": AdaCurrentPackage,
+        "object": AdaObject,
+        "exception": AdaObject,
+        "generic-package-instantiation": AdaObject,
     }
     roles = {
-        'func':   AdaXRefRole(),
-        'proc':   AdaXRefRole(),
-        'type':   AdaXRefRole(),
-        'mod':    AdaXRefRole(),
+        "func": AdaXRefRole(),
+        "proc": AdaXRefRole(),
+        "type": AdaXRefRole(),
+        "ref": AdaXRefRole(),
+        "mod": AdaXRefRole(),
     }
     initial_data = {
-        'objects': {},     # fullname -> docname, objtype
-        'functions' : {},  # fullname -> arity -> (targetname, docname)
-        'procedures' : {}, # fullname -> arity -> (targetname, docname)
-        'packages': {},    # packagename -> docname, synopsis, platform, deprecated
+        "objects": {},  # fullname -> docname, objtype
+        "functions": {},  # fullname -> arity -> (targetname, docname)
+        "procedures": {},  # fullname -> arity -> (targetname, docname)
+        "packages": {},
+        # packagename -> docname, synopsis, platform, deprecated
     }
     indices = [
         AdaPackageIndex,
     ]
 
-    def clear_doc(self, docname):
-        # Python 3's "items" is a view, not a copy, and modifying the dict
-        # while iterating over the view is unsafe, so enforce copying by making
-        # lists from the views.
-        for fullname, (fn, _) in list(self.data['objects'].items()):
-            if fn == docname:
-                del self.data['objects'][fullname]
-        for modname, (fn, _, _, _) in list(self.data['packages'].items()):
-            if fn == docname:
-                del self.data['packages'][modname]
-        for fullname, funcs in list(self.data['functions'].items()):
-            for arity, (fn, _) in list(funcs.items()):
-                if fn == docname:
-                    del self.data['functions'][fullname][arity]
-            if not self.data['functions'][fullname]:
-                del self.data['functions'][fullname]
-        for fullname, funcs in list(self.data['procedures'].items()):
-            for arity, (fn, _) in list(funcs.items()):
-                if fn == docname:
-                    del self.data['procedures'][fullname][arity]
-            if not self.data['procedures'][fullname]:
-                del self.data['procedures'][fullname]
+    def clear_doc(self, docname: str) -> None:
+        for fullname, obj in list(self.objects.items()):
+            if obj.docname == docname:
+                del self.objects[fullname]
 
     def _find_obj(self, env, modname, name, objtype, searchorder=0):
         """
         Find a Ada object for "name", perhaps using the given module and/or
         classname.
+
+        TODO: Handling references to overloaded functions.
         """
-        if not name:
-            return None, None
-        if ":" not in name:
-            name = "%s:%s" % (modname, name)
+        # First try: try to find an object by that name (this is assuming that
+        # the user used a fully qualified name)
+        obj = self.objects.get(name, None)
 
-        if name in self.data['objects']:
-            return name, self.data['objects'][name][0]
+        # Second try: try prefixing the object with the module name.
+        if obj is None:
+            fqn = f"{modname}.{name}"
+            obj = self.objects.get(fqn)
+            if obj is not None:
+                name = fqn
 
-        if '/' in name:
-            fname, arity = name.split('/')
-            arity = int(arity)
-        else:
-            fname = name
-            arity = -1
-        if fname in self.data['functions']:
-            arities = self.data['functions'][fname]
-        elif fname in self.data['procedures']:
-            arities = self.data['procedures'][fname]
-        else:
-            return None, None
+        if obj:
+            return name, obj.docname
 
-        if arity == -1:
-            arity = min(arities)
-        if arity in arities:
-             docname, targetname = arities[arity]
-             return targetname, docname
         return None, None
 
-    def resolve_xref(self, env, fromdocname, builder,
-                     typ, target, node, contnode):
-        if typ == 'mod' and target in self.data['packages']:
-            docname, synopsis, platform, deprecated = \
-                self.data['packages'].get(target, ('','','', ''))
-            if not docname:
-                return None
-            else:
-                title = '%s%s%s' % ((platform and '(%s) ' % platform),
-                                    synopsis,
-                                    (deprecated and ' (deprecated)' or ''))
-                return make_refnode(builder, fromdocname, docname,
-                                    'module-' + target, contnode, title)
+    def resolve_xref(
+        self, env, fromdocname, builder, typ, target, node, contnode
+    ):
+        modname = node.get("ada:package")
+        searchorder = node.hasattr("refspecific") and 1 or 0
+        name, obj = self._find_obj(env, modname, target, typ, searchorder)
+        if not obj:
+            return None
         else:
-            modname = node.get('ada:package')
-            searchorder = node.hasattr('refspecific') and 1 or 0
-            name, obj = self._find_obj(env, modname, target, typ, searchorder)
-            if not obj:
-                return None
-            else:
-                return make_refnode(builder, fromdocname, obj, name,
-                                    contnode, name)
+            return make_refnode(
+                builder, fromdocname, obj, name, contnode, name
+            )
 
-    def get_objects(self):
-        # Python 3 has no iteritems, so use items.
-        for refname, (docname, type) in self.data['objects'].items():
-            yield (refname, refname, type, docname, refname, 1)
+    def get_objects(self) -> Iterator[Tuple[str, str, str, str, str, int]]:
+        for refname, obj in self.objects.items():
+            yield refname, refname, obj.objtype, obj.docname, obj.node_id, 1
+
+    @property
+    def objects(self) -> Dict[str, ObjectEntry]:
+        return self.data.setdefault("objects", {})  # fullname -> ObjectEntry
+
+    def note_object(
+        self, name: str, objtype: str, node_id: str, location: Any = None
+    ) -> None:
+        """Note an Ada object for cross reference.
+        .. versionadded:: 2.1
+        """
+        if name in self.objects:
+            other = self.objects[name]
+            logger.warning(
+                __(
+                    "duplicate object description of %s, "
+                    "other instance in %s, use :noindex: for one of them"
+                ),
+                name,
+                other.docname,
+            )
+        self.objects[name] = ObjectEntry(self.env.docname, node_id, objtype)
+
 
 def setup(app):
     app.add_domain(AdaDomain)
