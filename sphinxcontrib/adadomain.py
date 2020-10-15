@@ -264,6 +264,13 @@ class AdaObject(ObjectDescription):
         signode += addnodes.desc_type(name, "")
         return fullname
 
+    def handle_gen_package_sig(self, sig, signode):
+        signode += addnodes.desc_annotation(
+            "generic package ", "generic package "
+        )
+        fullname = self._resolve_module_name(signode, "", sig)
+        return fullname
+
     def handle_package_sig(self, sig, signode):
         signode += addnodes.desc_annotation("package ", "package ")
         fullname = self._resolve_module_name(signode, "", sig)
@@ -300,6 +307,8 @@ class AdaObject(ObjectDescription):
             return self.handle_exception_sig(sig, signode)
         elif self.objtype == "generic-package-instantiation":
             return self.handle_gen_package_inst(sig, signode)
+        elif self.objtype == "generic_package":
+            return self.handle_gen_package_sig(sig, signode)
         elif self.objtype == "package":
             return self.handle_package_sig(sig, signode)
         else:
@@ -530,6 +539,7 @@ class AdaDomain(Domain):
         "type": AdaObject,
         "set_package": AdaSetPackage,
         "package": AdaObject,
+        "generic_package": AdaObject,
         "currentpackage": AdaCurrentPackage,
         "object": AdaObject,
         "exception": AdaObject,
