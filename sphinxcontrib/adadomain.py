@@ -421,6 +421,17 @@ class AdaCurrentPackage(Directive):
         return []
 
 
+def rmlink(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    """
+    Role to reference an Ada Reference Manual entry, such as
+    ``:ada:rmlink:`3.4.2` ``
+    """
+    rm_page = text.replace(".", "-")
+    url = f"http://www.ada-auth.org/standards/12rm/html/RM-{rm_page}.html"
+    node = nodes.reference(rawtext, f"RM {text}", refuri=url, **options)
+    return [node], []
+
+
 class AdaXRefRole(XRefRole):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -551,6 +562,7 @@ class AdaDomain(Domain):
         "type": AdaXRefRole(),
         "ref": AdaXRefRole(),
         "mod": AdaXRefRole(),
+        "rmlink": rmlink,
     }
     initial_data = {
         "objects": {},  # fullname -> docname, objtype
