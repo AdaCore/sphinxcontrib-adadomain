@@ -29,6 +29,7 @@ try:
     import libadalang as lal
 
     USE_LAL = True
+    lal_context = lal.AnalysisContext(unit_provider=lal.UnitProvider.auto([]))
 except ImportError:
     USE_LAL = False
 
@@ -141,12 +142,6 @@ class AdaObject(ObjectDescription):
         signode += addnodes.desc_name(name, name)
         return fullname
 
-    @lru_cache()
-    def lal_context(self):
-        assert USE_LAL, "LAL is not available"
-
-        return lal.AnalysisContext(unit_provider=lal.UnitProvider.auto([]))
-
     def make_refnode(self, target, cont_node_type):
         refnode = addnodes.pending_xref(
             "",
@@ -184,7 +179,8 @@ class AdaObject(ObjectDescription):
 
         start_time = timeit.default_timer()
         try:
-            subp_spec_unit = self.lal_context().get_from_buffer(
+            assert USE_LAL, "LAL is not available"
+            subp_spec_unit = lal_context.get_from_buffer(
                 "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
             )
         except Exception:
