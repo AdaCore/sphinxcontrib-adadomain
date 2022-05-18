@@ -397,18 +397,13 @@ class AdaXRefRole(XRefRole):
         super().__init__(*args, **kwargs)
 
     def process_link(self, env, refnode, has_explicit_title, title, target):
-        pkg = env.temp_data.get("ada:package")
-        refnode["ada:package"] = pkg
-        if not has_explicit_title:
-            title = title.lstrip(":")  # only has a meaning for the target
-            target = target.lstrip("~")  # only has a meaning for the title
-            # if the first character is a tilde, don't display the module/class
-            # parts of the contents.
-            if title[0:1] == "~":
-                title = title[1:]
-                colon = title.rfind(":")
-                if colon != -1:
-                    title = title[colon + 1:]
+        refnode.reftype = "type"
+        refnode.refexplicit = False
+        refnode.refdomain = "ada",
+        refnode.reftarget = target
+
+        env_modname = self.env.temp_data.get("ada:package", "")
+        refnode["ada:package"] = env_modname
         return title, target
 
 
