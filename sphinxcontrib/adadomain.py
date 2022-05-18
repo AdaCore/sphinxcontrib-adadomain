@@ -581,6 +581,9 @@ class AdaDomain(Domain):
         if not obj:
             return None
         else:
+            # If we correctly resolved the type and are able to make an
+            # hyperlink, then use its relative name as a display name.
+            contnode[0] = nodes.Text(target.split(".")[-1])
             return make_refnode(
                 builder, fromdocname, obj, name, contnode, name
             )
