@@ -107,10 +107,21 @@ This directive is used to document generic package instantiations. It's of the f
 ``package`` directive
 ^^^^^^^^^^^^^^^^^^^^^
 
-This directive is used to document the current package. It's a top-level
-directive rather than a nesting one. you use it like this::
+This directive is used to document child packages. It's of the form::
 
-    .. ada:package:: Current_Package
+    .. ada:package:: Package_Name
+
+        Documentation for the package
+
+        .. ada:function: ....
+
+``set_package`` directive
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This directive is used to set the current library level package. It's a
+top-level directive rather than a nesting one. you use it like this::
+
+    .. ada:set_package:: Current_Package
 
     Doc for the package with corresponding directives
 
