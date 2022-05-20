@@ -49,12 +49,6 @@ ObjectEntry = NamedTuple(
 )
 
 
-# Due to the fact that parsing subp specs with LAL is pretty slow, we have two
-# paths here, a fast one and a slow one. The fast one doesn't use LAL at all.
-# It would be worth profiling to see what is the cause of this slowness.
-FAST_PATH = False
-
-
 class AdaObject(ObjectDescription):
     """
     Description of an Ada language object.
@@ -157,42 +151,15 @@ class AdaObject(ObjectDescription):
         refnode += cont_node_type("", target)
         return refnode
 
-    def handle_subp_sig_fast(self, sig, signode):
-        m = ada_subp_sig_re.match(sig)
-        if m is None:
-            raise Exception(f"m did not match for sig {sig}")
-
-        kind, name, sig = m.groups()
-
-        kind += " "
-
-        signode += addnodes.desc_annotation(kind, kind)
-        fullname = self._resolve_module_name(signode, "", name)
-        signode += addnodes.desc_annotation(sig, sig)
-        return fullname
-
     def handle_subp_sig(self, sig, signode):
 
-        assert USE_LAL, "LAL is not available"
-
-        import timeit
-
-        start_time = timeit.default_timer()
-        try:
-            assert USE_LAL, "LAL is not available"
-            subp_spec_unit = lal_context.get_from_buffer(
-                "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
-            )
-        except Exception:
-            raise
-
-        elapsed = timeit.default_timer() - start_time
-        print(elapsed)
+        subp_spec_unit = lal_context.get_from_buffer(
+            "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
+        )
         subp_spec: lal.SubpSpec = subp_spec_unit.root.cast(lal.SubpSpec)
 
         if subp_spec is None:
-            logger.warning("Couldn't parse the subp spec")
-            raise ValueError
+            raise self.error("Couldn't parse the subp spec")
 
         is_func = subp_spec.f_subp_returns is not None
 
@@ -291,10 +258,7 @@ class AdaObject(ObjectDescription):
 
     def handle_signature(self, sig, signode):
         if self.objtype in ["function", "procedure"]:
-            if FAST_PATH or not USE_LAL:
-                return self.handle_subp_sig_fast(sig, signode)
-            else:
-                return self.handle_subp_sig(sig, signode)
+            return self.handle_subp_sig(sig, signode)
         elif self.objtype == "type":
             return self.handle_type_sig(sig, signode)
         elif self.objtype == "object":
