@@ -264,6 +264,11 @@ class AdaObject(ObjectDescription):
         signode += addnodes.desc_type(name, "")
         return fullname
 
+    def handle_package_sig(self, sig, signode):
+        signode += addnodes.desc_annotation("package ", "package ")
+        fullname = self._resolve_module_name(signode, "", sig)
+        return fullname
+
     def handle_exception_sig(self, sig, signode):
         fullname = self._resolve_module_name(signode, "", sig)
         signode += addnodes.desc_annotation(": exception", ": exception")
@@ -295,6 +300,8 @@ class AdaObject(ObjectDescription):
             return self.handle_exception_sig(sig, signode)
         elif self.objtype == "generic-package-instantiation":
             return self.handle_gen_package_inst(sig, signode)
+        elif self.objtype == "package":
+            return self.handle_package_sig(sig, signode)
         else:
             raise Exception(f"Unhandled ada object: {self.objtype} {sig}")
 
@@ -331,7 +338,7 @@ class AdaObject(ObjectDescription):
             )
 
 
-class AdaPackage(Directive):
+class AdaSetPackage(Directive):
     """
     Directive to mark description of a new package.
     """
@@ -521,7 +528,8 @@ class AdaDomain(Domain):
         "function": AdaObject,
         "procedure": AdaObject,
         "type": AdaObject,
-        "package": AdaPackage,
+        "set_package": AdaSetPackage,
+        "package": AdaObject,
         "currentpackage": AdaCurrentPackage,
         "object": AdaObject,
         "exception": AdaObject,
