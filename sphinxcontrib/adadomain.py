@@ -161,6 +161,9 @@ class AdaObject(ObjectDescription):
         if subp_spec is None:
             raise self.error("Couldn't parse the subp spec")
 
+        if len(subp_spec_unit.diagnostics) > 0:
+            raise self.error("Errors parsing the subp spec")
+
         is_func = subp_spec.f_subp_returns is not None
 
         modname, name, returntype = (
