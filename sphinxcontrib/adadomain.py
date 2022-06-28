@@ -390,7 +390,7 @@ def rmlink(name, rawtext, text, lineno, inliner, options={}, content=[]):
     ``:ada:rmlink:`3.4.2` ``
     """
     rm_page = text.replace(".", "-")
-    url = f"http://www.ada-auth.org/standards/12rm/html/RM-{rm_page}.html"
+    url = f"http://www.ada-auth.org/standards/2xrm/html/RM-{rm_page}.html"
     node = nodes.reference(rawtext, f"RM {text}", refuri=url, **options)
     return [node], []
 
