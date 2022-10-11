@@ -340,7 +340,9 @@ class AdaSetPackage(Directive):
         targetnode = nodes.target(
             "", "", ids=["package-" + modname], ismod=True
         )
+        node_id = make_id(env, self.state.document, "", modname)
         self.state.document.note_explicit_target(targetnode)
+        targetnode["ids"].append(node_id)
         ret = [targetnode]
         # XXX this behavior of the module directive is a mess...
         if "platform" in self.options:
@@ -359,6 +361,12 @@ class AdaSetPackage(Directive):
                 ]
             )
             ret.append(inode)
+
+        # Register the module in the Ada domain index, so that we can reference
+        # it.
+        domain = cast(AdaDomain, env.get_domain("ada"))
+        domain.note_object(modname, "module", node_id, location=targetnode)
+
         return ret
 
 
