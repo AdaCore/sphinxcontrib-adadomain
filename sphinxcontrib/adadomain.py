@@ -131,8 +131,6 @@ class AdaObject(ObjectDescription):
             signode["package"] = env_modname
 
         signode["fullname"] = fullname
-        # name_pfx = (signode["package"] + ".") if signode["package"] else ""
-        # signode += addnodes.desc_addname(name_pfx, name_pfx)
         signode += addnodes.desc_name(name, name)
         return fullname
 
