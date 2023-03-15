@@ -119,7 +119,10 @@ class AdaObject(ObjectDescription):
     def needs_arglist(self):
         return self.objtype == "function" or self.objtype == "procedure"
 
-    def _resolve_module_name(self, signode, modname, name):
+    def get_full_name(self, signode, modname, name):
+        """
+        Get the full name for this Ada object.
+        """
         env_modname = self.options.get(
             "package", self.env.temp_data.get("ada:package", "")
         )
@@ -175,7 +178,7 @@ class AdaObject(ObjectDescription):
         kind = "function " if is_func else "procedure "
         signode += addnodes.desc_annotation(kind, kind)
 
-        fullname = self._resolve_module_name(signode, modname, name)
+        fullname = self.get_full_name(signode, modname, name)
 
         signode += nodes.Text(" ")
 
@@ -211,7 +214,7 @@ class AdaObject(ObjectDescription):
         name = m.groups()[0]
 
         signode += addnodes.desc_annotation("type ", "type ")
-        fullname = self._resolve_module_name(signode, "", name)
+        fullname = self.get_full_name(signode, "", name)
 
         signode += addnodes.desc_type(name, "")
         return fullname
@@ -224,7 +227,7 @@ class AdaObject(ObjectDescription):
         name, descr = m.groups()
         descr = " " + descr
 
-        fullname = self._resolve_module_name(signode, "", name)
+        fullname = self.get_full_name(signode, "", name)
         signode += addnodes.desc_annotation(descr, descr)
 
         signode += addnodes.desc_type(name, "")
@@ -234,16 +237,16 @@ class AdaObject(ObjectDescription):
         signode += addnodes.desc_annotation(
             "generic package ", "generic package "
         )
-        fullname = self._resolve_module_name(signode, "", sig)
+        fullname = self.get_full_name(signode, "", sig)
         return fullname
 
     def handle_package_sig(self, sig, signode):
         signode += addnodes.desc_annotation("package ", "package ")
-        fullname = self._resolve_module_name(signode, "", sig)
+        fullname = self.get_full_name(signode, "", sig)
         return fullname
 
     def handle_exception_sig(self, sig, signode):
-        fullname = self._resolve_module_name(signode, "", sig)
+        fullname = self.get_full_name(signode, "", sig)
         signode += addnodes.desc_annotation(": exception", ": exception")
         return fullname
 
@@ -253,7 +256,7 @@ class AdaObject(ObjectDescription):
             raise Exception(f"m did not match for sig {sig}")
         name, inst = m.groups()
         signode += addnodes.desc_annotation("package ", "package ")
-        fullname = self._resolve_module_name(signode, "", name)
+        fullname = self.get_full_name(signode, "", name)
         signode += addnodes.desc_name(" ", " ")
         signode += addnodes.desc_annotation(" is new ", " is new ")
         signode += addnodes.desc_name(inst, inst)
