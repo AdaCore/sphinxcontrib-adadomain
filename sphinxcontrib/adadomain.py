@@ -116,22 +116,18 @@ class AdaObject(ObjectDescription):
         "package": directives.unchanged,
     }
 
-    def get_full_name(self, signode, modname, name):
+    def get_full_name(self, signode, name):
         """
         Get the full name for this Ada object.
         """
         env_modname = self.options.get(
             "package", self.env.temp_data.get("ada:package", "")
         )
-        if modname:
-            fullname = modname + name
-            signode["package"] = modname[:-1]
-        else:
-            fullname = env_modname + "." + name if env_modname else name
-            signode["package"] = env_modname
+        fullname = env_modname + "." + name if env_modname else name
 
+        signode["package"] = env_modname
         signode["fullname"] = fullname
-        signode += addnodes.desc_name(name, name)
+
         return fullname
 
     def make_refnode(self, target, cont_node_type):
@@ -164,16 +160,14 @@ class AdaObject(ObjectDescription):
 
         is_func = subp_spec.f_subp_returns is not None
 
-        modname, name, returntype = (
-            "",
+        subp_name, returntype = (
             subp_spec.f_subp_name.text,
-            subp_spec.f_subp_returns.text if is_func else "",
+            subp_spec.f_subp_returns.text if is_func else ""
         )
 
         kind = "function " if is_func else "procedure "
         signode += addnodes.desc_annotation(kind, kind)
-
-        fullname = self.get_full_name(signode, modname, name)
+        signode += addnodes.desc_name(signode, subp_name)
 
         signode += nodes.Text(" ")
 
@@ -199,7 +193,7 @@ class AdaObject(ObjectDescription):
         if returntype:
             signode += self.make_refnode(returntype, addnodes.desc_returns)
 
-        return fullname
+        return subp_name
 
     def handle_type_sig(self, sig, signode):
         m = ada_type_sig_re.match(sig)
@@ -209,10 +203,10 @@ class AdaObject(ObjectDescription):
         name = m.groups()[0]
 
         signode += addnodes.desc_annotation("type ", "type ")
-        fullname = self.get_full_name(signode, "", name)
-
+        signode += addnodes.desc_name(signode, name)
         signode += addnodes.desc_type(name, "")
-        return fullname
+
+        return name
 
     def handle_object_sig(self, sig, signode):
         m = ada_object_sig_re.match(sig)
@@ -222,58 +216,63 @@ class AdaObject(ObjectDescription):
         name, descr = m.groups()
         descr = " " + descr
 
-        fullname = self.get_full_name(signode, "", name)
+        signode += addnodes.desc_name(signode, name)
         signode += addnodes.desc_annotation(descr, descr)
-
         signode += addnodes.desc_type(name, "")
-        return fullname
+
+        return name
 
     def handle_gen_package_sig(self, sig, signode):
         signode += addnodes.desc_annotation(
             "generic package ", "generic package "
         )
-        fullname = self.get_full_name(signode, "", sig)
-        return fullname
+        signode += addnodes.desc_name(signode, sig)
+        return sig
 
     def handle_package_sig(self, sig, signode):
         signode += addnodes.desc_annotation("package ", "package ")
-        fullname = self.get_full_name(signode, "", sig)
-        return fullname
+        signode += addnodes.desc_name(signode, sig)
+        return sig
 
     def handle_exception_sig(self, sig, signode):
-        fullname = self.get_full_name(signode, "", sig)
         signode += addnodes.desc_annotation(": exception", ": exception")
-        return fullname
+        signode += addnodes.desc_name(signode, sig)
+        return sig
 
     def handle_gen_package_inst(self, sig, signode):
         m = ada_package_inst_sig_re.match(sig)
         if m is None:
             raise Exception(f"m did not match for sig {sig}")
         name, inst = m.groups()
+
         signode += addnodes.desc_annotation("package ", "package ")
-        fullname = self.get_full_name(signode, "", name)
+        signode += addnodes.desc_name(signode, name)
         signode += addnodes.desc_name(" ", " ")
         signode += addnodes.desc_annotation(" is new ", " is new ")
         signode += addnodes.desc_name(inst, inst)
-        return fullname
+
+        return name
 
     def handle_signature(self, sig, signode):
+        ret = None
         if self.objtype in ["function", "procedure"]:
-            return self.handle_subp_sig(sig, signode)
+            ret = self.handle_subp_sig(sig, signode)
         elif self.objtype == "type":
-            return self.handle_type_sig(sig, signode)
+            ret = self.handle_type_sig(sig, signode)
         elif self.objtype == "object":
-            return self.handle_object_sig(sig, signode)
+            ret = self.handle_object_sig(sig, signode)
         elif self.objtype == "exception":
-            return self.handle_exception_sig(sig, signode)
+            ret = self.handle_exception_sig(sig, signode)
         elif self.objtype == "generic-package-instantiation":
-            return self.handle_gen_package_inst(sig, signode)
+            ret = self.handle_gen_package_inst(sig, signode)
         elif self.objtype == "generic_package":
-            return self.handle_gen_package_sig(sig, signode)
+            ret = self.handle_gen_package_sig(sig, signode)
         elif self.objtype == "package":
-            return self.handle_package_sig(sig, signode)
+            ret = self.handle_package_sig(sig, signode)
         else:
             raise Exception(f"Unhandled ada object: {self.objtype} {sig}")
+
+        return ret
 
     def get_index_text(self, name):
         if self.objtype == "function":
@@ -288,20 +287,24 @@ class AdaObject(ObjectDescription):
     def add_target_and_index(
         self, name: str, sig: str, signode: addnodes.desc_signature
     ) -> None:
-        node_id = make_id(self.env, self.state.document, "", name)
+
+        full_name = self.get_full_name(signode, name)
+
+        node_id = make_id(self.env, self.state.document, "", full_name)
         signode["ids"].append(node_id)
 
-        # Assign old styled node_id(name) not to break old hyperlinks (if
+        # Assign old styled node_id(full_name) not to break old hyperlinks (if
         # possible) Note: Will removed in Sphinx-5.0 (RemovedInSphinx50Warning)
-        if node_id != name and name not in self.state.document.ids:
-            signode["ids"].append(name)
+        if node_id != full_name and full_name not in self.state.document.ids:
+            signode["ids"].append(full_name)
 
         self.state.document.note_explicit_target(signode)
 
         domain = cast(AdaDomain, self.env.get_domain("ada"))
-        domain.note_object(name, self.objtype, node_id, location=signode)
 
-        indextext = self.get_index_text(name)
+        domain.note_object(full_name, self.objtype, node_id, location=signode)
+
+        indextext = self.get_index_text(full_name)
         if indextext:
             self.indexnode["entries"].append(
                 ("single", indextext, node_id, "", None)
