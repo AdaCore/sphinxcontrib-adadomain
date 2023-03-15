@@ -116,9 +116,6 @@ class AdaObject(ObjectDescription):
         "package": directives.unchanged,
     }
 
-    def needs_arglist(self):
-        return self.objtype == "function" or self.objtype == "procedure"
-
     def get_full_name(self, signode, modname, name):
         """
         Get the full name for this Ada object.
