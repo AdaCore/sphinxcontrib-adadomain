@@ -9,7 +9,6 @@ Some parts of the code copied from erlangdomain by SHIBUKAWA Yoshiki.
 """
 
 import logging
-from functools import lru_cache
 import re
 from typing import cast, Any, Dict, NamedTuple, Iterator, Tuple
 
