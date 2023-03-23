@@ -10,15 +10,25 @@ Some parts of the code copied from erlangdomain by SHIBUKAWA Yoshiki.
 
 import logging
 import re
-from typing import cast, Any, Dict, NamedTuple, Iterator, Tuple
+from typing import (
+    Iterable, List, Protocol, Sequence, Union, cast, Any, Dict, NamedTuple,
+    Iterator,
+    Tuple
+)
 
 from docutils import nodes
+from docutils.nodes import Element
 from docutils.parsers.rst import directives
 from docutils.parsers.rst import Directive
+from docutils.parsers.rst.states import Inliner
 
 from sphinx import addnodes
+from sphinx.addnodes import desc_signature
+from sphinx.application import Sphinx
+from sphinx.builders import Builder
 from sphinx.directives import ObjectDescription
-from sphinx.domains import Domain, Index, ObjType
+from sphinx.domains import Domain, Index, IndexEntry, ObjType
+from sphinx.environment import BuildEnvironment
 from sphinx.locale import _, __
 from sphinx.roles import XRefRole
 from sphinx.util.docfields import Field, TypedField
@@ -31,6 +41,19 @@ try:
     lal_context = lal.AnalysisContext(unit_provider=lal.UnitProvider.auto([]))
 except ImportError:
     USE_LAL = False
+
+
+# TODO: Due to the inheritance structure hierarchy of docutils nodes, and to
+# limitations in mypy's protocol typing, we have no way of saying that we  want
+# a node that has a constructor as below, and that is also a Node (AFAICT). For
+# the moment, we'll just enforce the proper constructor
+class DescNodeProtocol(Protocol):
+
+    def __init__(self, rawsource: str = '', text: str = '',
+                 *args: nodes.Element,
+                 **kwargs: Any) -> None:
+        pass
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,12 +138,13 @@ class AdaObject(ObjectDescription):
         "package": directives.unchanged,
     }
 
-    def get_full_name(self, signode, name):
+    def get_full_name(self, signode: desc_signature, name: str) -> str:
         """
         Get the full name for this Ada object.
         """
         env_modname = self.options.get(
-            "package", self.env.temp_data.get("ada:package", "")
+            "package",
+            self.env.temp_data.get("ada:package", "")
         )
         fullname = env_modname + "." + name if env_modname else name
 
@@ -129,7 +153,11 @@ class AdaObject(ObjectDescription):
 
         return fullname
 
-    def make_refnode(self, target, cont_node_type):
+    def make_refnode(
+        self,
+        target: str,
+        cont_node_type: type[DescNodeProtocol]
+    ) -> addnodes.pending_xref:
         refnode = addnodes.pending_xref(
             "",
             refdomain="ada",
@@ -144,7 +172,7 @@ class AdaObject(ObjectDescription):
         refnode += cont_node_type("", target)
         return refnode
 
-    def handle_subp_sig(self, sig, signode):
+    def handle_subp_sig(self, sig: str, signode: desc_signature) -> str:
 
         subp_spec_unit = lal_context.get_from_buffer(
             "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
@@ -194,7 +222,7 @@ class AdaObject(ObjectDescription):
 
         return subp_name
 
-    def handle_type_sig(self, sig, signode):
+    def handle_type_sig(self, sig: str, signode: desc_signature) -> str:
         m = ada_type_sig_re.match(sig)
         if m is None:
             raise Exception(f"m did not match for sig {sig}")
@@ -207,7 +235,7 @@ class AdaObject(ObjectDescription):
 
         return name
 
-    def handle_object_sig(self, sig, signode):
+    def handle_object_sig(self, sig: str, signode: desc_signature) -> str:
         m = ada_object_sig_re.match(sig)
         if m is None:
             raise Exception(f"m did not match for sig {sig}")
@@ -221,24 +249,24 @@ class AdaObject(ObjectDescription):
 
         return name
 
-    def handle_gen_package_sig(self, sig, signode):
+    def handle_gen_package_sig(self, sig: str, signode: desc_signature) -> str:
         signode += addnodes.desc_annotation(
             "generic package ", "generic package "
         )
         signode += addnodes.desc_name(signode, sig)
         return sig
 
-    def handle_package_sig(self, sig, signode):
+    def handle_package_sig(self, sig: str, signode: desc_signature) -> str:
         signode += addnodes.desc_annotation("package ", "package ")
         signode += addnodes.desc_name(signode, sig)
         return sig
 
-    def handle_exception_sig(self, sig, signode):
-        signode += addnodes.desc_annotation(": exception", ": exception")
+    def handle_exception_sig(self, sig: str, signode: desc_signature) -> str:
         signode += addnodes.desc_name(signode, sig)
+        signode += addnodes.desc_annotation(": exception", ": exception")
         return sig
 
-    def handle_gen_package_inst(self, sig, signode):
+    def handle_package_inst(self, sig: str, signode: desc_signature) -> str:
         m = ada_package_inst_sig_re.match(sig)
         if m is None:
             raise Exception(f"m did not match for sig {sig}")
@@ -252,8 +280,7 @@ class AdaObject(ObjectDescription):
 
         return name
 
-    def handle_signature(self, sig, signode):
-        ret = None
+    def handle_signature(self, sig: str, signode: desc_signature) -> str:
         if self.objtype in ["function", "procedure"]:
             ret = self.handle_subp_sig(sig, signode)
         elif self.objtype == "type":
@@ -263,7 +290,7 @@ class AdaObject(ObjectDescription):
         elif self.objtype == "exception":
             ret = self.handle_exception_sig(sig, signode)
         elif self.objtype == "generic-package-instantiation":
-            ret = self.handle_gen_package_inst(sig, signode)
+            ret = self.handle_package_inst(sig, signode)
         elif self.objtype == "generic_package":
             ret = self.handle_gen_package_sig(sig, signode)
         elif self.objtype == "package":
@@ -273,18 +300,18 @@ class AdaObject(ObjectDescription):
 
         return ret
 
-    def get_index_text(self, name):
+    def get_index_text(self, name: str) -> str:
         if self.objtype == "function":
-            return _("%s (Ada function)") % name
+            return f"{name} (Ada function)"
         elif self.objtype == "procedure":
-            return _("%s (Ada procedure)") % name
+            return f"{name} (Ada procedure)"
         elif self.objtype == "type":
-            return _("%s (Ada type)") % name
+            return f"{name} (Ada type)"
         else:
             return ""
 
     def add_target_and_index(
-        self, name: str, sig: str, signode: addnodes.desc_signature
+        self, name: str, sig: str, signode: desc_signature
     ) -> None:
 
         full_name = self.get_full_name(signode, name)
@@ -326,7 +353,7 @@ class AdaSetPackage(Directive):
         "deprecated": directives.flag,
     }
 
-    def run(self):
+    def run(self) -> Sequence[nodes.Node]:
         env = self.state.document.settings.env
         modname = self.arguments[0].strip()
         noindex = "noindex" in self.options
@@ -343,7 +370,7 @@ class AdaSetPackage(Directive):
         node_id = make_id(env, self.state.document, "", modname)
         self.state.document.note_explicit_target(targetnode)
         targetnode["ids"].append(node_id)
-        ret = [targetnode]
+        ret: List[nodes.Node] = [targetnode]
         # XXX this behavior of the module directive is a mess...
         if "platform" in self.options:
             platform = self.options["platform"]
@@ -370,29 +397,10 @@ class AdaSetPackage(Directive):
         return ret
 
 
-class AdaCurrentPackage(Directive):
-    """
-    This directive is just to tell Sphinx that we're documenting
-    stuff in package foo, but links to package foo won't lead here.
-    """
-
-    has_content = False
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = False
-    option_spec = {}
-
-    def run(self):
-        env = self.state.document.settings.env
-        modname = self.arguments[0].strip()
-        if modname == "None":
-            env.temp_data["ada:package"] = None
-        else:
-            env.temp_data["ada:package"] = modname
-        return []
-
-
-def rmlink(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def rmlink(name: str, rawtext: str, text: str,
+           lineno: int, inliner: Inliner, options: Dict[str, Any] = {},
+           content: List[str] = []) -> Tuple[List[nodes.Node],
+                                             List[nodes.system_message]]:
     """
     Role to reference an Ada Reference Manual entry, such as
     ``:ada:rmlink:`3.4.2` ``
@@ -404,14 +412,19 @@ def rmlink(name, rawtext, text, lineno, inliner, options={}, content=[]):
 
 
 class AdaXRefRole(XRefRole):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-    def process_link(self, env, refnode, has_explicit_title, title, target):
-        refnode.reftype = "type"
-        refnode.refexplicit = False
-        refnode.refdomain = "ada",
-        refnode.reftarget = target
+    def process_link(
+        self,
+        env: BuildEnvironment,
+        refnode: Element,
+        has_explicit_title: bool,
+        title: str, target: str
+    ) -> tuple[str, str]:
+
+        refnode["reftype"] = "type"
+        refnode["refexplicit"] = False
+        refnode["refdomain"] = "ada"
+        refnode["reftarget"] = target
 
         env_modname = self.env.temp_data.get("ada:package", "")
         refnode["ada:package"] = env_modname
@@ -427,8 +440,11 @@ class AdaPackageIndex(Index):
     localname = _("Ada Package Index")
     shortname = _("Ada packages")
 
-    def generate(self, docnames=None):
-        content = {}
+    def generate(
+        self, docnames: Union[Iterable[str], None] = None
+    ) -> Tuple[List[Tuple[str, List[IndexEntry]]], bool]:
+
+        content: Dict[str, List[IndexEntry]] = {}
         # list of prefixes to ignore
         ignores = self.domain.env.config["modindex_common_prefix"]
         ignores = sorted(ignores, key=len, reverse=True)
@@ -461,12 +477,11 @@ class AdaPackageIndex(Index):
             package = modname.split(":")[0]
             if package != modname:
                 # it's a submodule
-                if prev_modname == package:
-                    # first submodule - make parent a group head
-                    entries[-1][1] = 1
-                elif not prev_modname.startswith(package):
+                if not prev_modname.startswith(package):
                     # submodule without parent in list, add dummy entry
-                    entries.append([stripped + package, 1, "", "", "", "", ""])
+                    entries.append(
+                        IndexEntry(stripped + package, 1, "", "", "", "", "")
+                    )
                 subtype = 2
             else:
                 num_toplevels += 1
@@ -474,7 +489,7 @@ class AdaPackageIndex(Index):
 
             qualifier = deprecated and _("Deprecated") or ""
             entries.append(
-                [
+                IndexEntry(
                     stripped + modname,
                     subtype,
                     docname,
@@ -482,7 +497,7 @@ class AdaPackageIndex(Index):
                     platforms,
                     qualifier,
                     synopsis,
-                ]
+                )
             )
             prev_modname = modname
 
@@ -493,9 +508,9 @@ class AdaPackageIndex(Index):
 
         # sort by first letter
         # (Python 3 has no iteritems, so use items).
-        content = sorted(content.items())
+        list_content = sorted(content.items())
 
-        return content, collapse
+        return list_content, collapse
 
 
 class AdaDomain(Domain):
@@ -517,7 +532,6 @@ class AdaDomain(Domain):
         "set_package": AdaSetPackage,
         "package": AdaObject,
         "generic_package": AdaObject,
-        "currentpackage": AdaCurrentPackage,
         "object": AdaObject,
         "exception": AdaObject,
         "generic-package-instantiation": AdaObject,
@@ -530,13 +544,16 @@ class AdaDomain(Domain):
         "mod": AdaXRefRole(),
         "rmlink": rmlink,
     }
-    initial_data = {
+
+    # TODO: Is this useful?
+    initial_data: dict = {
         "objects": {},  # fullname -> docname, objtype
         "functions": {},  # fullname -> arity -> (targetname, docname)
         "procedures": {},  # fullname -> arity -> (targetname, docname)
         "packages": {},
         # packagename -> docname, synopsis, platform, deprecated
     }
+
     indices = [
         AdaPackageIndex,
     ]
@@ -546,7 +563,9 @@ class AdaDomain(Domain):
             if obj.docname == docname:
                 del self.objects[fullname]
 
-    def _find_obj(self, env, modname, name, objtype, searchorder=0):
+    def _find_obj(
+        self, env: BuildEnvironment, modname: str, name: str, objtype: str
+    ) -> Tuple[str, str]:
         """
         Find a Ada object for "name", perhaps using the given module and/or
         classname.
@@ -567,11 +586,17 @@ class AdaDomain(Domain):
         if obj:
             return name, obj.docname
 
-        return None, None
+        return ("", "")
 
     def resolve_xref(
-        self, env, fromdocname, builder, typ, target, node, contnode
-    ):
+        self, env: BuildEnvironment, fromdocname: str,
+        builder: Builder,
+        typ: str,
+        target: str,
+        node: addnodes.pending_xref,
+        contnode: Element
+    ) -> Union[Element, None]:
+
         # Resolve classwide type references to their base type
         real_target = target
 
@@ -582,8 +607,7 @@ class AdaDomain(Domain):
             real_target = target[:-6]
 
         modname = node.get("ada:package")
-        searchorder = node.hasattr("refspecific") and 1 or 0
-        name, obj = self._find_obj(env, modname, real_target, typ, searchorder)
+        name, obj = self._find_obj(env, modname, real_target, typ)
         if not obj:
             return None
         else:
@@ -610,8 +634,8 @@ class AdaDomain(Domain):
     def note_object(
         self, name: str, objtype: str, node_id: str, location: Any = None
     ) -> None:
-        """Note an Ada object for cross reference.
-        .. versionadded:: 2.1
+        """
+        Note an ada object for cross references.
         """
         if name in self.objects:
             other = self.objects[name]
@@ -626,5 +650,5 @@ class AdaDomain(Domain):
         self.objects[name] = ObjectEntry(self.env.docname, node_id, objtype)
 
 
-def setup(app):
+def setup(app: Sphinx) -> None:
     app.add_domain(AdaDomain)
