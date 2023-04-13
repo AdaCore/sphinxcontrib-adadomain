@@ -8,12 +8,13 @@ Ada domain for sphinx.
 Some parts of the code copied from erlangdomain by SHIBUKAWA Yoshiki.
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from typing import (
     Iterable, List, Protocol, Sequence, Union, cast, Any, Dict, NamedTuple,
-    Iterator,
-    Tuple
+    Iterator, Tuple
 )
 
 from docutils import nodes
