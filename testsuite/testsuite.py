@@ -138,14 +138,20 @@ class AdaDomainTest(Testsuite):
             help="Also generate the html version of the doc. Useful to check"
             " that the output is correct."
         )
+        parser.add_argument(
+            "--no-mypy", action="store_true",
+            help="Do not run mypy after successful testsuite runs."
+        )
 
     def set_up(self):
         self.env.rewrite_baselines = self.env.options.rewrite
 
 
 if __name__ == "__main__":
-    ret_1 = AdaDomainTest().testsuite_main()
+    t = AdaDomainTest()
+    ret_1 = t.testsuite_main()
     if ret_1:
         sys.exit(ret_1)
-    print("Running mypy")
-    subprocess.check_call(["mypy"], cwd=P.join(TESTSUITE_DIR, ".."))
+    if not t.env.options.no_mypy:
+        print("Running mypy")
+        subprocess.check_call(["mypy"], cwd=P.join(TESTSUITE_DIR, ".."))
