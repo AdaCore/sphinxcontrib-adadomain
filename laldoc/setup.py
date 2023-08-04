@@ -2,7 +2,7 @@
 
 """Setup configuration file for laldoc."""
 
-from distutils.core import setup
+from setuptools import setup
 
 
 # Run the setup tools
