@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 
-import sys
-
 import glob
-from os import path as P
+import os
+import os.path as P
 from shutil import copytree
+import sys
 import subprocess
 
 from e3.testsuite import Testsuite
@@ -58,13 +58,30 @@ class GendocDriver(DiffTestDriver):
         return False
 
     def set_up(self) -> None:
+        self.derived_env = dict(os.environ)
+        if self.env.options.python_prefix:
+            self.derived_env["PATH"] = (
+                P.join(self.env.options.python_prefix, "bin")
+                + P.pathsep
+                + self.derived_env["PATH"]
+            )
+
         # Generate rst if needed
         if self.env.options.regenerate_rst:
-            self.shell([
-                "python", "-m", "laldoc.generate_rst",
-                "-P", self.test_env.get("project_file", "prj/prj.gpr"),
-                "-O", "."
-            ], analyze_output=False, cwd=self.test_env["test_dir"])
+            self.shell(
+                [
+                    "python",
+                    "-m",
+                    "laldoc.generate_rst",
+                    "-P",
+                    self.test_env.get("project_file", "prj/prj.gpr"),
+                    "-O",
+                    ".",
+                ],
+                cwd=self.test_env["test_dir"],
+                env=self.derived_env,
+                analyze_output=False,
+            )
 
         sync_tree(
             self.test_env["test_dir"],
@@ -73,8 +90,6 @@ class GendocDriver(DiffTestDriver):
         )
 
         super().set_up()
-
-
 
     def run(self) -> None:
         doc_template_dir = P.join(TESTSUITE_DIR, "doc_template")
@@ -91,7 +106,8 @@ class GendocDriver(DiffTestDriver):
             ))
 
         self.shell(
-            ["sphinx-build", ".", "out"] + rst_files + ["-q", "-b", "xml"]
+            ["sphinx-build", ".", "out"] + rst_files + ["-q", "-b", "xml"],
+            env=self.derived_env,
         )
 
         if self.env.options.generate_html:
@@ -141,6 +157,12 @@ class AdaDomainTest(Testsuite):
         parser.add_argument(
             "--no-mypy", action="store_true",
             help="Do not run mypy after successful testsuite runs."
+        )
+        parser.add_argument(
+            "--python-prefix",
+            help="Installation prefix for the Python distribution that"
+            " provides Sphinx, sphinxcontrib-adadomain and laldoc. If"
+            " omitted, assume they are available in the environment.",
         )
 
     def set_up(self):
