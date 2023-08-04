@@ -120,23 +120,23 @@ class AdaDomainTest(Testsuite):
     """
     Testsuite for sphinxcontrib-adadomain
     """
-    tests_subdir = 'tests'
-    test_driver_map = {'gen-doc': GendocDriver}
+    tests_subdir = "tests"
+    test_driver_map = {"gen-doc": GendocDriver}
     default_driver = "gen-doc"
 
     def add_options(self, parser):
         parser.add_argument(
-            '--regenerate-rst', action='store_true',
-            help="Run laldoc's generate_rst prior to running the tests"
+            "--regenerate-rst", action="store_true",
+            help="Run laldoc's generate_rst prior to running the tests."
         )
         parser.add_argument(
-            '--rewrite', '-r', action='store_true',
-            help='Rewrite test baselines according to current output.'
+            "--rewrite", "-r", action="store_true",
+            help="Rewrite test baselines according to current output."
         )
         parser.add_argument(
-            '--generate-html', '-H', action='store_true',
-            help='Also generate the html version of the doc. '
-            'Useful to check that the output is correct'
+            "--generate-html", "-H", action="store_true",
+            help="Also generate the html version of the doc. Useful to check"
+            " that the output is correct."
         )
 
     def set_up(self):
