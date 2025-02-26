@@ -10,7 +10,7 @@ setup(
     name='laldoc',
     version='0.1-dev',
     author='AdaCore',
-    author_email='report@adacore.com',
+    author_email='support@adacore.com',
     url='https://www.adacore.com',
     description='Libadalang-based Ada source extractor for documentation',
     packages=['laldoc']
