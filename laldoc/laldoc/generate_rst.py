@@ -227,8 +227,13 @@ class GenerateDoc(lal.App):
                 .cast(lal.LibraryItem).f_item
             )
 
-            package_decl = decl.cast(lal.BasePackageDecl)
-            self.handle_package(package_decl)
+            if decl.is_a(lal.GenericPackageDecl):
+                gen_package = decl.cast(lal.GenericPackageDecl)
+                package_decl = gen_package.f_package_decl
+                self.handle_package(package_decl, gen_package)
+            else:
+                package_decl = decl.cast(lal.BasePackageDecl)
+                self.handle_package(package_decl)
 
             out_file = P.join(self.args.output_dir,
                               P.basename(P.splitext(unit.filename)[0]))
