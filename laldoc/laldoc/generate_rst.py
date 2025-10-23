@@ -553,6 +553,14 @@ class GenerateDoc(lal.App):
                             f"{decl.f_renaming_clause.f_renamed_object.text}"
                         )
 
+        elif isinstance(decl, lal.PackageRenamingDecl):
+            name = decl.p_defining_name.text
+            renames = decl.p_renamed_package.p_defining_name.text
+            emit_directive(f".. ada:package:: {name}")
+            with self.indent():
+                self.add_lines([''])
+                self.add_string(f":renames: {renames}")
+
         elif isinstance(decl, lal.ExceptionDecl):
             name = decl.p_defining_name.text
             emit_directive(f".. ada:exception:: {name}")

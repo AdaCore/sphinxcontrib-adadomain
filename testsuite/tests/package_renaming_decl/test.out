@@ -1,0 +1,20 @@
+== pkg.rst ==
+
+
+Pkg
+---
+
+.. ada:set_package:: Pkg
+
+
+
+.. ada:package:: Pkg.Q
+
+
+
+.. ada:package:: P
+    :package: Pkg
+
+    :renames: Q
+
+    A package renaming.
