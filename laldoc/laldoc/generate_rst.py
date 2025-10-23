@@ -48,7 +48,8 @@ def is_documentable_subp(node: lal.BasicDecl):
     want to document.
     """
     return node.is_a(
-        lal.BasicSubpDecl, lal.ExprFunction, lal.SubpRenamingDecl
+        lal.BasicSubpDecl, lal.ExprFunction,
+        lal.SubpRenamingDecl, lal.NullSubpDecl
     )
 
 
