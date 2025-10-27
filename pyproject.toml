@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sphinxcontrib-adadomain"
+version = "0.2"
+authors = [
+    {name = "Tero Koskinen", email = "tero.koskinen@iki.fi"},
+    {name = "AdaCore", email = "report@adacore.com"}
+]
+maintainers = [
+    {name = "AdaCore", email = "report@adacore.com"}
+]
+license = 'BSD-2-Clause'
+description = 'Sphinx "adadomain" extension'
+classifiers=[
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Topic :: Documentation',
+    'Topic :: Utilities',
+]
+
+[tool.setuptools]
+packages = ["sphinxcontrib"]
+py-modules = ['__init__']
