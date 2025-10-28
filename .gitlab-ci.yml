@@ -1,0 +1,38 @@
+include:
+  - component: $CI_SERVER_FQDN/eng/gitlab-templates/check-issue@~latest
+
+stages:
+  - check
+  - test
+
+wheels:
+  stage: test
+  needs: [issue-check]
+  services:
+    - image:pe-base
+  script:
+    - generic_anod_ci
+    - . /tmp/ci_env.sh
+    - anod test laldoc $ACI_TRACK_QUALIFIER
+    - testsuite_reports
+  artifacts:
+    reports:
+      junit: xunit-*.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+libadalang-doc:
+  stage: test
+  needs: [issue-check]
+  services:
+    - image:pe-base
+  script:
+    - generic_anod_ci
+    - . /tmp/ci_env.sh
+    - anod build libadalang-doc $ACI_TRACK_QUALIFIER
+    - testsuite_reports
+  artifacts:
+    reports:
+      junit: xunit-*.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
