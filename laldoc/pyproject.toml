@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "laldoc"
 version = "0.1"
 authors = [
-    {name = "AdaCore", email = "report@adacore.com"}
+    {name = "AdaCore", email = "support@adacore.com"}
 ]
 maintainers = [
-    {name = "AdaCore", email = "report@adacore.com"}
+    {name = "AdaCore", email = "support@adacore.com"}
 ]
 description = 'Libadalang-based Ada source extractor for documentation'
 
