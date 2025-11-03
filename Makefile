@@ -1,5 +1,6 @@
-PYTHON=python3
-WHEELS_DIR=$(PWD)/wheels
+PIP?=pip3
+WHEELS_DIR?=$(PWD)/wheels
+PACKAGES_DIR?=$(PWD)/packages
 
 WHEEL_TARGETS = sphinxcontrib-adadomain-wheel laldoc-wheel
 
@@ -7,11 +8,19 @@ all: $(WHEEL_TARGETS)
 .PHONY: $(WHEEL_TARGETS)
 
 sphinxcontrib-adadomain-wheel:
-	$(PYTHON) -m build --wheel \
-		--outdir $(WHEELS_DIR) \
-		--installer pip
+	$(PIP) wheel \
+	    --wheel-dir=$(WHEELS_DIR) \
+	    --no-deps \
+	    --find-links=$(PACKAGES_DIR) \
+	    --no-index \
+	    --no-cache-dir \
+	    .
 
 laldoc-wheel:
-	cd laldoc && $(PYTHON) -m build --wheel \
-		--outdir $(WHEELS_DIR) \
-		--installer pip
+	$(PIP) wheel \
+	    --wheel-dir=$(WHEELS_DIR) \
+	    --no-deps \
+	    --find-links=$(PACKAGES_DIR) \
+	    --no-index \
+	    --no-cache-dir \
+	    ./laldoc
