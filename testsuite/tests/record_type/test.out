@@ -1,0 +1,18 @@
+== pkg.rst ==
+
+
+Pkg
+---
+
+.. ada:set_package:: Pkg
+
+
+.. ada:type:: type R
+    :package: Pkg
+
+    :component Standard.Integer A:
+        Doc for component A
+    :component Standard.Integer B:
+        Doc for component B
+
+    Doc for record type R

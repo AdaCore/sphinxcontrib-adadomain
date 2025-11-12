@@ -486,7 +486,7 @@ class GenerateDoc(lal.App):
 
                 # Emit components
                 for comp, discrs in comps.items():
-                    doc, annots = self.get_documentation(comp)
+                    inner_doc, annots = self.get_documentation(comp)
                     for dn in comp.p_defining_names:
                         formal_type = comp.p_formal_type()
                         if formal_type.is_a(lal.AnonymousTypeDecl):
@@ -501,7 +501,7 @@ class GenerateDoc(lal.App):
                         )
                         self.add_string(f":{comp_kind} {tn} {dn.text}:")
                         with self.indent():
-                            self.add_lines(doc)
+                            self.add_lines(inner_doc)
 
         elif isinstance(decl, lal.ObjectDecl):
             default_expr = None
