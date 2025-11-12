@@ -1,0 +1,46 @@
+== pkg.rst ==
+
+
+Pkg
+---
+
+.. ada:set_package:: Pkg
+
+
+
+.. ada:generic_package:: Pkg.Element
+
+
+    Element package documentation.
+
+    :Formals:
+        .. ada:type:: type T
+            :package: Pkg.Element
+
+
+            This type is private.
+
+    .. ada:procedure:: procedure Set (E : Pkg.Element.T)
+        :package: Pkg.Element
+
+        A procedure that sets things.
+
+    .. ada:procedure:: procedure Reset
+        :package: Pkg.Element
+
+        This one resets things!
+
+    .. ada:function:: function Get  return Pkg.Element.T
+        :package: Pkg.Element
+
+        Oh! A getter, how nice it is!
+
+    .. ada:function:: function Is_Valid  return Standard.Boolean
+        :package: Pkg.Element
+
+        Return whether this is valid.
+
+    .. ada:exception:: Invalid_Element
+        :package: Pkg.Element
+
+        This is raised when this is invalid!

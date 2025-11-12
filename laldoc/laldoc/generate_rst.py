@@ -48,7 +48,8 @@ def is_documentable_subp(node: lal.BasicDecl):
     want to document.
     """
     return node.is_a(
-        lal.BasicSubpDecl, lal.ExprFunction, lal.SubpRenamingDecl
+        lal.BasicSubpDecl, lal.ExprFunction,
+        lal.SubpRenamingDecl, lal.NullSubpDecl
     )
 
 
@@ -226,8 +227,13 @@ class GenerateDoc(lal.App):
                 .cast(lal.LibraryItem).f_item
             )
 
-            package_decl = decl.cast(lal.BasePackageDecl)
-            self.handle_package(package_decl)
+            if decl.is_a(lal.GenericPackageDecl):
+                gen_package = decl.cast(lal.GenericPackageDecl)
+                package_decl = gen_package.f_package_decl
+                self.handle_package(package_decl, gen_package)
+            else:
+                package_decl = decl.cast(lal.BasePackageDecl)
+                self.handle_package(package_decl)
 
             out_file = P.join(self.args.output_dir,
                               P.basename(P.splitext(unit.filename)[0]))
@@ -546,6 +552,14 @@ class GenerateDoc(lal.App):
                             ":renames: "
                             f"{decl.f_renaming_clause.f_renamed_object.text}"
                         )
+
+        elif isinstance(decl, lal.PackageRenamingDecl):
+            name = decl.p_defining_name.text
+            renames = decl.p_renamed_package.p_defining_name.text
+            emit_directive(f".. ada:package:: {name}")
+            with self.indent():
+                self.add_lines([''])
+                self.add_string(f":renames: {renames}")
 
         elif isinstance(decl, lal.ExceptionDecl):
             name = decl.p_defining_name.text
