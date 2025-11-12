@@ -136,12 +136,38 @@ class GendocDriver(DiffTestDriver):
                     self.output += "\n"
 
 
+class LALDocDriver(DiffTestDriver):
+    """
+    Driver to check the RST output of laldoc when run on a source file.
+    """
+
+    def run(self):
+        # Create a simple project file for the sources to process
+        with open(self.working_dir("p.gpr"), "w") as f:
+            f.write("project P is end P;")
+
+        # Run laldoc on that project
+        self.shell(
+            [sys.executable, "-m", "laldoc.generate_rst", "-P", "p.gpr"]
+        )
+
+        # Consider all generate RST files for the test baseline
+        for i, filename in enumerate(
+            sorted(glob.glob(self.working_dir("*.rst")))
+        ):
+            if i > 0:
+                self.output += "\n\n"
+            self.output += f"== {P.basename(filename)} ==\n\n"
+            with open(filename) as f:
+                self.output += f.read()
+
+
 class AdaDomainTest(Testsuite):
     """
     Testsuite for sphinxcontrib-adadomain
     """
     tests_subdir = "tests"
-    test_driver_map = {"gen-doc": GendocDriver}
+    test_driver_map = {"gen-doc": GendocDriver, "laldoc": LALDocDriver}
     default_driver = "gen-doc"
 
     def add_options(self, parser):
