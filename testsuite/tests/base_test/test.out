@@ -51,7 +51,7 @@
                             </field_body>
                         </field>
                     </field_list>
-                    <paragraph>Documentation for A, B, C</paragraph>
+                    <paragraph>Documentation for record T</paragraph>
                     <index entries="['single',\ 'Pkg.Foo\ (Ada\ procedure)',\ 'Pkg.Foo',\ '',\ None]"></index>
                     <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
                         <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Foo" ids="Pkg.Foo" package="Pkg"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Foo</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>

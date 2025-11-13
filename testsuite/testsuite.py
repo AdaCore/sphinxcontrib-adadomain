@@ -10,6 +10,7 @@ import subprocess
 from e3.testsuite import Testsuite
 from e3.testsuite.driver.diff import DiffTestDriver
 from e3.fs import sync_tree
+from e3.sys import interpreter
 
 TESTSUITE_DIR = P.abspath(P.join(P.dirname(P.abspath(__file__))))
 
@@ -41,7 +42,18 @@ Indices and tables
 """
 
 
-class GendocDriver(DiffTestDriver):
+class BaseDocDriver(DiffTestDriver):
+    """
+    Base driver for laldoc/sphinxcontrib-adadomain modules
+    """
+
+    def python_interpreter(self) -> str:
+        return (interpreter(self.env.options.python_prefix)
+                if self.env.options.python_prefix
+                else "python")
+
+
+class GendocDriver(BaseDocDriver):
     """
     Driver to test doc generation.
 
@@ -70,7 +82,7 @@ class GendocDriver(DiffTestDriver):
         if self.env.options.regenerate_rst:
             self.shell(
                 [
-                    "python",
+                    self.python_interpreter(),
                     "-m",
                     "laldoc.generate_rst",
                     "-P",
@@ -79,7 +91,6 @@ class GendocDriver(DiffTestDriver):
                     ".",
                 ],
                 cwd=self.test_env["test_dir"],
-                env=self.derived_env,
                 analyze_output=False,
             )
 
@@ -112,8 +123,8 @@ class GendocDriver(DiffTestDriver):
 
         if self.env.options.generate_html:
             self.shell(
-                ["sphinx-build", ".", "html"]
-                + rst_files + ["-q", "-b", "html"]
+                ["sphinx-build", ".", "html"] + rst_files + ["-q", "-b", "html"],
+                env=self.derived_env,
             )
 
         for xmlf in glob.glob(
@@ -136,19 +147,25 @@ class GendocDriver(DiffTestDriver):
                     self.output += "\n"
 
 
-class LALDocDriver(DiffTestDriver):
+class LALDocDriver(BaseDocDriver):
     """
     Driver to check the RST output of laldoc when run on a source file.
     """
 
-    def run(self):
+    def run(self) -> None:
         # Create a simple project file for the sources to process
         with open(self.working_dir("p.gpr"), "w") as f:
             f.write("project P is end P;")
 
         # Run laldoc on that project
         self.shell(
-            [sys.executable, "-m", "laldoc.generate_rst", "-P", "p.gpr"]
+            [
+                self.python_interpreter(),
+                "-m",
+                "laldoc.generate_rst",
+                "-P",
+                "p.gpr"
+            ]
         )
 
         # Consider all generate RST files for the test baseline

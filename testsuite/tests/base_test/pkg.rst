@@ -37,7 +37,7 @@ portland lo-fi.
     :component Standard.Integer C:
         Documentation for A, B, C
 
-    Documentation for A, B, C
+    Documentation for record T
 
     .. ada:procedure:: procedure Foo (Self : Pkg.T)
         :package: Pkg
