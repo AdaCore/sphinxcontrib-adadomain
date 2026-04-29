@@ -292,6 +292,21 @@ class GenerateDoc(lal.App):
                 continue
 
             if is_documentable_subp(decl):
+                # Skip subprograms whose return type is marked no-document.
+                spec = decl.p_subp_spec_or_null()
+                if spec and spec.f_subp_returns:
+                    try:
+                        ret_decl = spec.f_subp_returns.p_designated_type_decl
+                        if ret_decl is not None:
+                            _, ret_annots = self.get_documentation(ret_decl)
+                            if ret_annots.get('no-document'):
+                                continue
+                    except lal.PropertyError:
+                        self.warn(
+                            f"Could not resolve return type of "
+                            f"{decl.p_defining_name.text}"
+                        )
+
                 # Look for the type under which this subprogram should be
                 # documented ("owning_type"). This is either the explicitly
                 # asked type ("belongs-to" annotation) or the type that is a
