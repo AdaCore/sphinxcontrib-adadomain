@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import re
 from typing import (
-    Iterable, List, Protocol, Sequence, Union, cast, Any, Dict, NamedTuple,
+    Callable, Iterable, List, Sequence, Union, cast, Any, Dict, NamedTuple,
     Iterator, Tuple
 )
 
@@ -42,18 +42,6 @@ try:
     lal_context = lal.AnalysisContext(unit_provider=lal.UnitProvider.auto([]))
 except ImportError:
     USE_LAL = False
-
-
-# TODO: Due to the inheritance structure hierarchy of docutils nodes, and to
-# limitations in mypy's protocol typing, we have no way of saying that we  want
-# a node that has a constructor as below, and that is also a Node (AFAICT). For
-# the moment, we'll just enforce the proper constructor
-class DescNodeProtocol(Protocol):
-
-    def __init__(self, rawsource: str = '', text: str = '',
-                 *args: nodes.Element,
-                 **kwargs: Any) -> None:
-        pass
 
 
 logger = logging.getLogger(__name__)
@@ -157,7 +145,7 @@ class AdaObject(ObjectDescription):
     def make_refnode(
         self,
         target: str,
-        cont_node_type: type[DescNodeProtocol]
+        cont_node_type: Callable[[str, str], nodes.Node]
     ) -> addnodes.pending_xref:
         refnode = addnodes.pending_xref(
             "",
@@ -208,15 +196,15 @@ class AdaObject(ObjectDescription):
                 param = addnodes.desc_parameter()
                 param_list += param
                 for i, name in enumerate(p.f_ids):
-                    param += addnodes.desc_sig_name("", name.text)
+                    param.append(addnodes.desc_sig_name("", name.text))
                     if i + 1 < len(p.f_ids):
-                        param += addnodes.desc_sig_punctuation("", ", ")
-                param += addnodes.desc_sig_punctuation("", " : ")
+                        param.append(addnodes.desc_sig_punctuation("", ", "))
+                param.append(addnodes.desc_sig_punctuation("", " : "))
 
                 refnode = self.make_refnode(
                     p.f_type_expr.text, addnodes.desc_sig_name
                 )
-                param += refnode
+                param.append(refnode)
 
         if returntype:
             signode += self.make_refnode(returntype, addnodes.desc_returns)
@@ -377,7 +365,7 @@ class AdaSetPackage(Directive):
             platform = self.options["platform"]
             node = nodes.paragraph()
             node += nodes.emphasis("", _("Platforms: "))
-            node += nodes.Text(platform, platform)
+            node += nodes.Text(platform)
             ret.append(node)
         # the synopsis isn't printed; in fact, it is only used in the
         # modindex currently.
