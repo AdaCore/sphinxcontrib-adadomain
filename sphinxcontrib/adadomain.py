@@ -344,6 +344,8 @@ class AdaObject(ObjectDescription):
             return f"{name} (Ada generic function)"
         elif self.objtype == "generic_procedure":
             return f"{name} (Ada generic procedure)"
+        elif self.objtype == "generic-package-instantiation":
+            return f"{name} (Ada package instantiation)"
         elif self.objtype == "generic-subp-instantiation":
             return f"{name} (Ada subprogram instantiation)"
         elif self.objtype == "type":

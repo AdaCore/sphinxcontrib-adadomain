@@ -1,0 +1,62 @@
+### pkg.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
+    <section ids="package-Pkg Pkg pkg" names="pkg">
+        <title>Pkg</title>
+        <index entries="['single',\ 'Pkg\ (package)',\ 'package-Pkg',\ 'Pkg',\ None]"></index>
+        <index entries=""></index>
+        <desc classes="ada generic_package" desctype="generic_package" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic_package">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Pkg.Container" ids="Pkg.Pkg.Container" package="Pkg"><desc_annotation xml:space="preserve">generic package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Pkg.Container</desc_name></desc_signature>
+            <desc_content>
+                <field_list>
+                    <field>
+                        <field_name>Formals</field_name>
+                        <field_body>
+                            <index entries="['single',\ 'Pkg.Container.T\ (Ada\ type)',\ 'Pkg.Container.T',\ '',\ None]"></index>
+                            <desc classes="ada type" desctype="type" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="type">
+                                <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Container.T" ids="Pkg.Container.T" package="Pkg.Container"><desc_annotation xml:space="preserve">type </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">T</desc_name><desc_type xml:space="preserve"></desc_type></desc_signature>
+                                <desc_content>
+                                    <paragraph>The element type.</paragraph>
+                                </desc_content>
+                            </desc>
+                        </field_body>
+                    </field>
+                </field_list>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Pkg.Int_Container\ (Ada\ package\ instantiation)',\ 'Pkg.Int_Container',\ '',\ None]"></index>
+        <desc classes="ada generic-package-instantiation" desctype="generic-package-instantiation" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-package-instantiation">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Int_Container" ids="Pkg.Int_Container" package="Pkg"><desc_annotation xml:space="preserve">package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Int_Container</desc_name><desc_name classes="sig-name descname sig-name descname" xml:space="preserve"> </desc_name><desc_annotation xml:space="preserve"> is new </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Container</desc_name></desc_signature>
+            <desc_content>
+                <literal_block force="False" highlight_args="{}" language="ada" linenos="False" xml:space="preserve">package Int_Container is new Container (Integer);</literal_block>
+                <field_list>
+                    <field>
+                        <field_name>Instantiated generic package</field_name>
+                        <field_body>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Pkg.Container" reftitle="Pkg.Pkg.Container"><literal classes="xref ada ada-type">Container</literal></reference></inline></paragraph>
+                        </field_body>
+                    </field>
+                </field_list>
+                <paragraph>Container specialized for Integer.</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Pkg.Bool_Container\ (Ada\ package\ instantiation)',\ 'Pkg.Bool_Container',\ '',\ None]"></index>
+        <desc classes="ada generic-package-instantiation" desctype="generic-package-instantiation" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-package-instantiation">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Bool_Container" ids="Pkg.Bool_Container" package="Pkg"><desc_annotation xml:space="preserve">package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Bool_Container</desc_name><desc_name classes="sig-name descname sig-name descname" xml:space="preserve"> </desc_name><desc_annotation xml:space="preserve"> is new </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Container</desc_name></desc_signature>
+            <desc_content>
+                <literal_block force="False" highlight_args="{}" language="ada" linenos="False" xml:space="preserve">package Bool_Container is new Container (Boolean);</literal_block>
+                <field_list>
+                    <field>
+                        <field_name>Instantiated generic package</field_name>
+                        <field_body>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Pkg.Container" reftitle="Pkg.Pkg.Container"><literal classes="xref ada ada-type">Container</literal></reference></inline></paragraph>
+                        </field_body>
+                    </field>
+                </field_list>
+                <paragraph>Container specialized for Boolean.</paragraph>
+            </desc_content>
+        </desc>
+    </section>
+</document>
+

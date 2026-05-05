@@ -621,10 +621,13 @@ class GenerateDoc(lal.App):
                 with self.indent():
                     self.add_lines([''] + decl.text.splitlines())
                 self.add_lines([''])
-                self.add_string(
-                    ":instpkg: "
-                    f"{decl.p_designated_generic_decl.p_fully_qualified_name}"
-                )
+                try:
+                    fqn = (decl.p_designated_generic_decl
+                           .p_get_uninstantiated_node.p_fully_qualified_name)
+                except lal.PropertyError:
+                    self.warn(f"Could not resolve generic for {sig}")
+                else:
+                    self.add_string(f":instpkg: {fqn}")
         elif isinstance(decl, lal.GenericSubpInstantiation):
             sig = strip_ws(lal.Token.text_range(
                 decl.token_start, decl.f_generic_subp_name.token_end
