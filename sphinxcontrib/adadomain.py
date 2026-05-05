@@ -51,6 +51,9 @@ ada_object_sig_re = re.compile(r"^(\w+)\s+(:\s+.+)", re.VERBOSE)
 ada_package_inst_sig_re = re.compile(
     r"^package\s+(\w+)\s+is\s+new\s+([\w\.]+)\s*", re.VERBOSE
 )
+ada_subp_inst_sig_re = re.compile(
+    r"^(procedure|function)\s+(\w+|\".*?\")\s+is\s+new\s+([\w\.]+)\s*", re.VERBOSE
+)
 ada_subp_sig_re = re.compile(
     r"^(procedure|function)\s+(\w+|\".*?\")\s*(.*)", re.VERBOSE
 )
@@ -98,6 +101,13 @@ class AdaObject(ObjectDescription):
             label=_("Instantiated generic package"),
             has_arg=False,
             names=("instpkg",),
+            bodyrolename="type",
+        ),
+        Field(
+            "instsubp",
+            label=_("Instantiated generic subprogram"),
+            has_arg=False,
+            names=("instsubp",),
             bodyrolename="type",
         ),
         Field(
@@ -161,7 +171,9 @@ class AdaObject(ObjectDescription):
         refnode += cont_node_type("", target)
         return refnode
 
-    def handle_subp_sig(self, sig: str, signode: desc_signature) -> str:
+    def handle_subp_sig(
+        self, sig: str, signode: desc_signature, generic: bool = False
+    ) -> str:
 
         subp_spec_unit = lal_context.get_from_buffer(
             "<input>", sig, rule=lal.GrammarRule.subp_spec_rule
@@ -181,8 +193,11 @@ class AdaObject(ObjectDescription):
             subp_spec.f_subp_returns.text if is_func else ""
         )
 
-        kind = "function " if is_func else "procedure "
-        signode += addnodes.desc_annotation(kind, kind)
+        annotation = "{prefix}{kind} ".format(
+            prefix="generic " if generic else "",
+            kind="function" if is_func else "procedure",
+        )
+        signode += addnodes.desc_annotation(annotation, annotation)
         signode += addnodes.desc_name(signode, subp_name)
 
         signode += nodes.Text(" ")
@@ -283,9 +298,24 @@ class AdaObject(ObjectDescription):
 
         return name
 
+    def handle_subp_inst(self, sig: str, signode: desc_signature) -> str:
+        m = ada_subp_inst_sig_re.match(sig)
+        assert m is not None, f"Invalid subprogram instantiation signature: {sig}"
+        kind, name, inst = m.groups()
+
+        signode += addnodes.desc_annotation(kind + " ", kind + " ")
+        signode += addnodes.desc_name(signode, name)
+        signode += addnodes.desc_name(" ", " ")
+        signode += addnodes.desc_annotation(" is new ", " is new ")
+        signode += addnodes.desc_name(inst, inst)
+
+        return name
+
     def handle_signature(self, sig: str, signode: desc_signature) -> str:
         if self.objtype in ["function", "procedure"]:
             ret = self.handle_subp_sig(sig, signode)
+        elif self.objtype in ["generic_function", "generic_procedure"]:
+            ret = self.handle_subp_sig(sig, signode, generic=True)
         elif self.objtype == "type":
             ret = self.handle_type_sig(sig, signode)
         elif self.objtype == "object":
@@ -294,6 +324,8 @@ class AdaObject(ObjectDescription):
             ret = self.handle_exception_sig(sig, signode)
         elif self.objtype == "generic-package-instantiation":
             ret = self.handle_package_inst(sig, signode)
+        elif self.objtype == "generic-subp-instantiation":
+            ret = self.handle_subp_inst(sig, signode)
         elif self.objtype == "generic_package":
             ret = self.handle_gen_package_sig(sig, signode)
         elif self.objtype == "package":
@@ -308,6 +340,12 @@ class AdaObject(ObjectDescription):
             return f"{name} (Ada function)"
         elif self.objtype == "procedure":
             return f"{name} (Ada procedure)"
+        elif self.objtype == "generic_function":
+            return f"{name} (Ada generic function)"
+        elif self.objtype == "generic_procedure":
+            return f"{name} (Ada generic procedure)"
+        elif self.objtype == "generic-subp-instantiation":
+            return f"{name} (Ada subprogram instantiation)"
         elif self.objtype == "type":
             return f"{name} (Ada type)"
         else:
@@ -537,6 +575,9 @@ class AdaDomain(Domain):
         "object": AdaObject,
         "exception": AdaObject,
         "generic-package-instantiation": AdaObject,
+        "generic-subp-instantiation": AdaObject,
+        "generic_function": AdaObject,
+        "generic_procedure": AdaObject,
     }
     roles = {
         "func": AdaXRefRole(),

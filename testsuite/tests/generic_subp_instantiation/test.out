@@ -1,0 +1,63 @@
+### pkg.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
+    <section ids="package-Pkg Pkg pkg" names="pkg">
+        <title>Pkg</title>
+        <index entries="['single',\ 'Pkg\ (package)',\ 'package-Pkg',\ 'Pkg',\ None]"></index>
+        <index entries="['single',\ 'Pkg.Identity\ (Ada\ generic\ function)',\ 'Pkg.Identity',\ '',\ None]"></index>
+        <desc classes="ada generic_function" desctype="generic_function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic_function">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Identity" ids="Pkg.Identity" package="Pkg"><desc_annotation xml:space="preserve">generic function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Identity</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.Identity.T" reftitle="Pkg.Identity.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter></desc_parameterlist><reference internal="True" refid="Pkg.Identity.T" reftitle="Pkg.Identity.T"><desc_returns xml:space="preserve">T</desc_returns></reference></desc_signature>
+            <desc_content>
+                <field_list>
+                    <field>
+                        <field_name>Formals</field_name>
+                        <field_body>
+                            <index entries="['single',\ 'Pkg.Identity.T\ (Ada\ type)',\ 'Pkg.Identity.T',\ '',\ None]"></index>
+                            <desc classes="ada type" desctype="type" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="type">
+                                <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Identity.T" ids="Pkg.Identity.T" package="Pkg.Identity"><desc_annotation xml:space="preserve">type </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">T</desc_name><desc_type xml:space="preserve"></desc_type></desc_signature>
+                                <desc_content>
+                                    <paragraph>The element type to identity-convert.</paragraph>
+                                </desc_content>
+                            </desc>
+                        </field_body>
+                    </field>
+                </field_list>
+                <paragraph>Generic identity function.</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Pkg.Int_Identity\ (Ada\ subprogram\ instantiation)',\ 'Pkg.Int_Identity',\ '',\ None]"></index>
+        <desc classes="ada generic-subp-instantiation" desctype="generic-subp-instantiation" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-subp-instantiation">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Int_Identity" ids="Pkg.Int_Identity" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Int_Identity</desc_name><desc_name classes="sig-name descname sig-name descname" xml:space="preserve"> </desc_name><desc_annotation xml:space="preserve"> is new </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Identity</desc_name></desc_signature>
+            <desc_content>
+                <literal_block force="False" highlight_args="{}" language="ada" linenos="False" xml:space="preserve">function Int_Identity is new Identity (Integer);</literal_block>
+                <field_list>
+                    <field>
+                        <field_name>Instantiated generic subprogram</field_name>
+                        <field_body>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Identity" reftitle="Pkg.Identity"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
+                        </field_body>
+                    </field>
+                </field_list>
+                <paragraph>Identity function specialized for Integer.</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Pkg.Bool_Identity\ (Ada\ subprogram\ instantiation)',\ 'Pkg.Bool_Identity',\ '',\ None]"></index>
+        <desc classes="ada generic-subp-instantiation" desctype="generic-subp-instantiation" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-subp-instantiation">
+            <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Bool_Identity" ids="Pkg.Bool_Identity" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Bool_Identity</desc_name><desc_name classes="sig-name descname sig-name descname" xml:space="preserve"> </desc_name><desc_annotation xml:space="preserve"> is new </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Identity</desc_name></desc_signature>
+            <desc_content>
+                <literal_block force="False" highlight_args="{}" language="ada" linenos="False" xml:space="preserve">function Bool_Identity is new Identity (Boolean);</literal_block>
+                <field_list>
+                    <field>
+                        <field_name>Instantiated generic subprogram</field_name>
+                        <field_body>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Identity" reftitle="Pkg.Identity"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
+                        </field_body>
+                    </field>
+                </field_list>
+                <paragraph>Identity function specialized for Boolean.</paragraph>
+            </desc_content>
+        </desc>
+    </section>
+</document>
+
