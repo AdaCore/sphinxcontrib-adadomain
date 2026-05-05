@@ -104,12 +104,12 @@ This directive is used to document generic package instantiations. It's of the f
 
         :instpkg: GNATCOLL.Opt_Parse.Parse_Option
 
-``generic_package`` directive
+``generic-package`` directive
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This directive is used to document generic packages. It's of the form::
 
-    .. ada:generic_package:: Package_Name
+    .. ada:generic-package:: Package_Name
 
         Documentation for the package
 

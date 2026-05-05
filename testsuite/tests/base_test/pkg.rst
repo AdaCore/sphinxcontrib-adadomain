@@ -84,7 +84,7 @@ portland lo-fi.
         ``belongs-to`` annotation, it is correctly attached to :ada:ref:`U`.
 
 
-.. ada:generic_package:: Pkg.Gen_Package
+.. ada:generic-package:: Pkg.Gen_Package
 
 
     Documentation for Singleton 2

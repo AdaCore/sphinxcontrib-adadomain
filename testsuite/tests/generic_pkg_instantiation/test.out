@@ -6,7 +6,7 @@
         <title>Pkg</title>
         <index entries="['single',\ 'Pkg\ (package)',\ 'package-Pkg',\ 'Pkg',\ None]"></index>
         <index entries=""></index>
-        <desc classes="ada generic_package" desctype="generic_package" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic_package">
+        <desc classes="ada generic-package" desctype="generic-package" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-package">
             <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Pkg.Container" ids="Pkg.Pkg.Container" package="Pkg"><desc_annotation xml:space="preserve">generic package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Pkg.Container</desc_name></desc_signature>
             <desc_content>
                 <field_list>

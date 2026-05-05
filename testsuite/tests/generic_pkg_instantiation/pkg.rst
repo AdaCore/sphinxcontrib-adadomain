@@ -6,7 +6,7 @@ Pkg
 
 
 
-.. ada:generic_package:: Pkg.Container
+.. ada:generic-package:: Pkg.Container
 
 
 

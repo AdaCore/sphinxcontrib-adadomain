@@ -5,7 +5,7 @@ Pkg
 .. ada:set_package:: Pkg
 
 
-.. ada:generic_function:: function Identity (X : Pkg.Identity.T) return Pkg.Identity.T
+.. ada:generic-function:: function Identity (X : Pkg.Identity.T) return Pkg.Identity.T
     :package: Pkg
 
     :Formals:

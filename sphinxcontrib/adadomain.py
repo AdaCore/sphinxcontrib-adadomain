@@ -314,7 +314,7 @@ class AdaObject(ObjectDescription):
     def handle_signature(self, sig: str, signode: desc_signature) -> str:
         if self.objtype in ["function", "procedure"]:
             ret = self.handle_subp_sig(sig, signode)
-        elif self.objtype in ["generic_function", "generic_procedure"]:
+        elif self.objtype in ["generic-function", "generic-procedure"]:
             ret = self.handle_subp_sig(sig, signode, generic=True)
         elif self.objtype == "type":
             ret = self.handle_type_sig(sig, signode)
@@ -326,7 +326,7 @@ class AdaObject(ObjectDescription):
             ret = self.handle_package_inst(sig, signode)
         elif self.objtype == "generic-subp-instantiation":
             ret = self.handle_subp_inst(sig, signode)
-        elif self.objtype == "generic_package":
+        elif self.objtype == "generic-package":
             ret = self.handle_gen_package_sig(sig, signode)
         elif self.objtype == "package":
             ret = self.handle_package_sig(sig, signode)
@@ -340,9 +340,9 @@ class AdaObject(ObjectDescription):
             return f"{name} (Ada function)"
         elif self.objtype == "procedure":
             return f"{name} (Ada procedure)"
-        elif self.objtype == "generic_function":
+        elif self.objtype == "generic-function":
             return f"{name} (Ada generic function)"
-        elif self.objtype == "generic_procedure":
+        elif self.objtype == "generic-procedure":
             return f"{name} (Ada generic procedure)"
         elif self.objtype == "generic-package-instantiation":
             return f"{name} (Ada package instantiation)"
@@ -573,13 +573,13 @@ class AdaDomain(Domain):
         "type": AdaObject,
         "set_package": AdaSetPackage,
         "package": AdaObject,
-        "generic_package": AdaObject,
+        "generic-package": AdaObject,
         "object": AdaObject,
         "exception": AdaObject,
         "generic-package-instantiation": AdaObject,
         "generic-subp-instantiation": AdaObject,
-        "generic_function": AdaObject,
-        "generic_procedure": AdaObject,
+        "generic-function": AdaObject,
+        "generic-procedure": AdaObject,
     }
     roles = {
         "func": AdaXRefRole(),

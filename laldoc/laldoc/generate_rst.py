@@ -397,7 +397,7 @@ class GenerateDoc(lal.App):
             )
             self.add_lines(['', f".. ada:set_package:: {pkg_name}"])
         else:
-            generic = "generic_" if gen_package is not None else ""
+            generic = "generic-" if gen_package is not None else ""
             self.add_lines([f".. ada:{generic}package:: {pkg_name}", ""])
             self._indent += 4
 
@@ -600,7 +600,7 @@ class GenerateDoc(lal.App):
                 'procedure' if subp_spec.p_returns is None
                 else 'function'
             )
-            emit_directive(f".. ada:generic_{subp_kind}:: {prof}")
+            emit_directive(f".. ada:generic-{subp_kind}:: {prof}")
 
             if decl.f_formal_part.f_decls:
                 with self.indent():

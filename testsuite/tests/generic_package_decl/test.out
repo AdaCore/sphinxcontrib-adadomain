@@ -8,7 +8,7 @@ Pkg
 
 
 
-.. ada:generic_package:: Pkg.Element
+.. ada:generic-package:: Pkg.Element
 
 
     Element package documentation.
