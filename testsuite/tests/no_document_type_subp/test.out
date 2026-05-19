@@ -17,3 +17,8 @@ Pkg
         :package: Pkg
 
         Get a node.
+
+    .. ada:procedure:: procedure Set (Self : Pkg.My_Node)
+        :package: Pkg
+
+        Set a node.

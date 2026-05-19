@@ -12,4 +12,10 @@ package Pkg is
    function Get (Self : My_Node) return Base_Node;
    --  Should not appear in the documentation.
 
+   procedure Set (Self : My_Node);
+   --  Set a node.
+
+   procedure Set (Self : Base_Node);
+   --  Should not appear in the documentation.
+
 end Pkg;
