@@ -191,6 +191,8 @@ class AdaObject(ObjectDescription):
         param_list.child_text_separator = "; "
         signode += param_list
 
+        # Collect parameter types for the overload disambiguation key
+        param_types: list[str] = []
         if subp_spec.f_subp_params:
             for p in subp_spec.f_subp_params.f_params:
                 param = addnodes.desc_parameter()
@@ -205,6 +207,18 @@ class AdaObject(ObjectDescription):
                     p.f_type_expr.text, addnodes.desc_sig_name
                 )
                 param.append(refnode)
+
+                # One entry per identifier (e.g. "A, B : T" means two T entries)
+                for _ in p.f_ids:
+                    param_types.append(p.f_type_expr.text)
+
+        # Store the key so add_target_and_index can make each overload unique.
+        # Both parameter types and return type are included so that Ada
+        # overloads differing only by return type also get distinct keys.
+        key = "(" + ",".join(param_types) + ")" if param_types else ""
+        if returntype:
+            key += " return " + returntype
+        signode["ada:sig_key"] = key
 
         if returntype:
             signode += self.make_refnode(returntype, addnodes.desc_returns)
@@ -305,19 +319,18 @@ class AdaObject(ObjectDescription):
 
         full_name = self.get_full_name(signode, name)
 
-        node_id = make_id(self.env, self.state.document, "", full_name)
+        # For subprograms, append the signature so that overloaded subprograms
+        # each get a unique entry.
+        overload_key = signode.get("ada:sig_key", "")
+        unique_name = full_name + overload_key
+
+        node_id = make_id(self.env, self.state.document, "", unique_name)
         signode["ids"].append(node_id)
-
-        # Assign old styled node_id(full_name) not to break old hyperlinks (if
-        # possible) Note: Will removed in Sphinx-5.0 (RemovedInSphinx50Warning)
-        if node_id != full_name and full_name not in self.state.document.ids:
-            signode["ids"].append(full_name)
-
         self.state.document.note_explicit_target(signode)
 
         domain = cast(AdaDomain, self.env.get_domain("ada"))
 
-        domain.note_object(full_name, self.objtype, node_id, location=signode)
+        domain.note_object(unique_name, self.objtype, node_id, location=signode)
 
         indextext = self.get_index_text(full_name)
         if indextext:
@@ -559,21 +572,32 @@ class AdaDomain(Domain):
         Find a Ada object for "name", perhaps using the given module and/or
         classname.
 
-        TODO: Handling references to overloaded functions.
+        Overloaded subprograms are stored with a signature suffix (e.g.
+        "Pkg.Hash(Unit)").  A bare cross-reference "Pkg.Hash" resolves to the
+        first registered overload when the name is unambiguous within a
+        package, which covers the common case.
         """
-        # First try: try to find an object by that name (this is assuming that
-        # the user used a fully qualified name)
-        obj = self.objects.get(name, None)
-
-        # Second try: try prefixing the object with the module name.
-        if obj is None:
-            fqn = f"{modname}.{name}"
-            obj = self.objects.get(fqn)
+        def _lookup(prefix: str) -> Tuple[str, str]:
+            # Exact match (non-subprogram objects, or cross-ref with full key)
+            obj = self.objects.get(prefix)
             if obj is not None:
-                name = fqn
+                return prefix, obj.docname
+            # Prefix match for overloaded subprograms: "Pkg.Hash" matches "Pkg.Hash(...)"
+            for key, obj in self.objects.items():
+                if key.startswith(prefix + "("):
+                    return key, obj.docname
+            return "", ""
 
-        if obj:
-            return name, obj.docname
+        # First try: fully qualified name as given
+        result = _lookup(name)
+        if result[0]:
+            return result
+
+        # Second try: prepend the current module name
+        if modname:
+            result = _lookup(f"{modname}.{name}")
+            if result[0]:
+                return result
 
         return ("", "")
 
@@ -614,7 +638,9 @@ class AdaDomain(Domain):
 
     def get_objects(self) -> Iterator[Tuple[str, str, str, str, str, int]]:
         for refname, obj in self.objects.items():
-            yield refname, refname, obj.objtype, obj.docname, obj.node_id, 1
+            # Strip the overload suffix (e.g. "(Type1,Type2)") for display
+            dispname = refname.partition("(")[0]
+            yield refname, dispname, obj.objtype, obj.docname, obj.node_id, 1
 
     @property
     def objects(self) -> Dict[str, ObjectEntry]:
