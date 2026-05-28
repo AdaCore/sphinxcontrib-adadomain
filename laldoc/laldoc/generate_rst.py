@@ -364,6 +364,7 @@ class GenerateDoc(lal.App):
                                  lal.GenericPackageInstantiation,
                                  lal.GenericSubpInstantiation,
                                  lal.GenericPackageDecl,
+                                 lal.GenericSubpDecl,
                                  lal.PackageDecl):
                     self.warn('default entity handling for '
                               f'{P.relpath(decl.unit.filename)}:{decl}')
@@ -396,7 +397,7 @@ class GenerateDoc(lal.App):
             )
             self.add_lines(['', f".. ada:set_package:: {pkg_name}"])
         else:
-            generic = "generic_" if gen_package is not None else ""
+            generic = "generic-" if gen_package is not None else ""
             self.add_lines([f".. ada:{generic}package:: {pkg_name}", ""])
             self._indent += 4
 
@@ -592,6 +593,23 @@ class GenerateDoc(lal.App):
             name = decl.p_defining_name.text
             emit_directive(f".. ada:exception:: {name}")
 
+        elif isinstance(decl, lal.GenericSubpDecl):
+            subp_spec = decl.f_subp_decl.p_subp_spec_or_null()
+            prof = make_profile(subp_spec)
+            subp_kind = (
+                'procedure' if subp_spec.p_returns is None
+                else 'function'
+            )
+            emit_directive(f".. ada:generic-{subp_kind}:: {prof}")
+
+            if decl.f_formal_part.f_decls:
+                with self.indent():
+                    self.add_lines([''])
+                    self.add_string(':Formals:')
+                    with self.indent():
+                        for formal in decl.f_formal_part.f_decls:
+                            self.handle_entity(formal.cast(lal.BasicDecl))
+
         elif isinstance(decl, lal.GenericPackageInstantiation):
             sig = strip_ws(lal.Token.text_range(
                 decl.token_start, decl.f_generic_pkg_name.token_end
@@ -603,10 +621,31 @@ class GenerateDoc(lal.App):
                 with self.indent():
                     self.add_lines([''] + decl.text.splitlines())
                 self.add_lines([''])
-                self.add_string(
-                    ":instpkg: "
-                    f"{decl.p_designated_generic_decl.p_fully_qualified_name}"
-                )
+                try:
+                    fqn = (decl.p_designated_generic_decl
+                           .p_get_uninstantiated_node.p_fully_qualified_name)
+                except lal.PropertyError:
+                    self.warn(f"Could not resolve generic for {sig}")
+                else:
+                    self.add_string(f":instpkg: {fqn}")
+        elif isinstance(decl, lal.GenericSubpInstantiation):
+            sig = strip_ws(lal.Token.text_range(
+                decl.token_start, decl.f_generic_subp_name.token_end
+            ))
+            emit_directive(f".. ada:generic-subp-instantiation:: {sig}")
+            with self.indent():
+                self.add_lines([''])
+                self.add_string(".. code-block:: ada")
+                with self.indent():
+                    self.add_lines([''] + decl.text.splitlines())
+                self.add_lines([''])
+                try:
+                    fqn = (decl.p_designated_generic_decl
+                           .p_get_uninstantiated_node.p_fully_qualified_name)
+                except lal.PropertyError:
+                    self.warn(f"Could not resolve generic for {sig}")
+                else:
+                    self.add_string(f":instsubp: {fqn}")
         elif isinstance(decl, lal.GenericFormal):
             self.handle_entity(decl.f_decl)
             return
