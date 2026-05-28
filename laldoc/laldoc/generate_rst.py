@@ -189,6 +189,21 @@ class GenerateDoc(lal.App):
 
         return doc, annots
 
+    def type_is_no_document(self, type_expr: lal.TypeExpr | None) -> bool:
+        """Return True if the type referred to by `type_expr` carries a
+        `no-document` annotation."""
+        if type_expr is None:
+            return False
+        try:
+            type_decl = type_expr.p_designated_type_decl
+        except lal.PropertyError:
+            self.warn(f"Could not resolve type {type_expr.text}")
+            return False
+        if type_decl is not None:
+            _, annots = self.get_documentation(type_decl)
+            return bool(annots.get('no-document'))
+        return False
+
     def main(self) -> None:
         self.lines = []
         self._indent = 0
@@ -292,6 +307,18 @@ class GenerateDoc(lal.App):
                 continue
 
             if is_documentable_subp(decl):
+                # Skip subprograms whose return type or any parameter type is
+                # marked no-document.
+                spec = decl.p_subp_spec_or_null()
+                if spec and (
+                    self.type_is_no_document(spec.f_subp_returns) or any(
+                        self.type_is_no_document(p.f_type_expr)
+                        for p in (spec.f_subp_params.f_params
+                                  if spec.f_subp_params else [])
+                    )
+                ):
+                    continue
+
                 # Look for the type under which this subprogram should be
                 # documented ("owning_type"). This is either the explicitly
                 # asked type ("belongs-to" annotation) or the type that is a

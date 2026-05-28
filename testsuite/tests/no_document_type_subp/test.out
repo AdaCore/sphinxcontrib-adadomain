@@ -1,0 +1,24 @@
+== pkg.rst ==
+
+
+Pkg
+---
+
+.. ada:set_package:: Pkg
+
+
+.. ada:type:: type My_Node
+    :package: Pkg
+
+
+    A node type.
+
+    .. ada:function:: function Get (Self : Pkg.My_Node) return Pkg.My_Node
+        :package: Pkg
+
+        Get a node.
+
+    .. ada:procedure:: procedure Set (Self : Pkg.My_Node)
+        :package: Pkg
+
+        Set a node.
