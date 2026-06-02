@@ -67,13 +67,13 @@ class GenerateDoc(lal.App):
     """
 
     annotations = {
-        'no-document': bool,  # Don't document associated entity
+        'private': bool,  # Don't document associated entity
 
         'belongs-to': str,  # Attach associated entity to entity given in
                             # parameter
 
-        'document-value': bool,  # Whether to document the value of an object
-                                 # decl or not. Default is True
+        'private-value': bool,  # When present, don't document the value of an
+                                # object decl (documented by default)
     }
 
     lines: List[str]
@@ -191,7 +191,7 @@ class GenerateDoc(lal.App):
 
     def type_is_no_document(self, type_expr: lal.TypeExpr | None) -> bool:
         """Return True if the type referred to by `type_expr` carries a
-        `no-document` annotation."""
+        `private` annotation."""
         if type_expr is None:
             return False
         try:
@@ -201,7 +201,7 @@ class GenerateDoc(lal.App):
             return False
         if type_decl is not None:
             _, annots = self.get_documentation(type_decl)
-            return bool(annots.get('no-document'))
+            return bool(annots.get('private'))
         return False
 
     def main(self) -> None:
@@ -303,7 +303,7 @@ class GenerateDoc(lal.App):
             _, annotations = self.get_documentation(decl)
 
             # Skip documentation for this entity
-            if annotations.get('no-document'):
+            if annotations.get('private'):
                 continue
 
             if is_documentable_subp(decl):
@@ -540,7 +540,8 @@ class GenerateDoc(lal.App):
         elif isinstance(decl, lal.ObjectDecl):
             default_expr = None
 
-            if decl.f_default_expr and annotations.get('document-value', True):
+            if (decl.f_default_expr
+                    and not annotations.get('private-value', False)):
                 # If there is a default expression to describe, do it as an
                 # additional description. The title will only contain the name
                 # up to the type expression.
