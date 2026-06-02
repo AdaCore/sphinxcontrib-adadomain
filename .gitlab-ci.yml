@@ -10,6 +10,8 @@ wheels:
   needs: [issue-check]
   services:
     - image:pe-base
+    - cpu:16
+    - mem:16
   script:
     - generic_anod_ci
     - . /tmp/ci_env.sh
@@ -26,6 +28,8 @@ libadalang-doc:
   needs: [issue-check]
   services:
     - image:pe-base
+    - cpu:16
+    - mem:16
   script:
     - generic_anod_ci
     - . /tmp/ci_env.sh
