@@ -43,7 +43,7 @@ package Pkg is
    --  referencing @U.D
 
    procedure Primitive_Of_Both (Self : T; Other : U);
-   --% belongs-to: U
+   --  @belongs-to U
    --  This is a primitive of both types. We want to test that thanks to the
    --  ``belongs-to`` annotation, it is correctly attached to :ada:ref:`U`.
 
@@ -51,7 +51,7 @@ package Pkg is
    --  Documentation for Singleton
 
    Singleton2 : T := (1, 2, 3);
-   --% document-value: False
+   --  @private-value
    --  Documentation for Singleton 2
 
    generic
@@ -74,6 +74,6 @@ package Pkg is
    end Nested_Package;
 
    function Dont_Document return Boolean is (True);
-   --% no-document: True
+   --  @private
 
 end Pkg;

@@ -43,18 +43,17 @@ class AutoPackage(Directive):
     Annotations can be added to Ada comments in order to control the
     documentation generation. The general syntax for annotations is::
 
-        --% key: value
+        --  @annotation_name value
 
     Here are the supported annotations:
 
-    * ``no-document`` (bool): whether to disable documentation for the current
-      entity. False by default.
+    * ``private``: when present, disable documentation for the current entity.
 
     * ``belongs-to``: name of the type that must contain the documentation for
       the current entity.
 
-    * ``document-value`` (bool): whether to document the value corresponding to
-      object declarations. True by default.
+    * ``private-value``: when present, do not document the value corresponding
+      to object declarations (documented by default).
     """
 
     required_arguments = 1
@@ -66,9 +65,9 @@ class AutoPackage(Directive):
     }
 
     annotations = {
-        'no-document': bool,
+        'private': bool,
         'belongs-to': str,
-        'document-value': bool,
+        'private-value': bool,
     }
 
     def parse_into(self, doc, content_node):
@@ -218,7 +217,7 @@ class AutoPackage(Directive):
         node['objtype'] = node['desctype'] = 'object'
         name = decl.p_defining_name.text
 
-        if decl.f_default_expr and annotations.get('document-value', True):
+        if decl.f_default_expr and not annotations.get('private-value', False):
             # If there is a default expression to describe, do it as an
             # additional description. The title will only contain the name up
             # to the type expression.
@@ -388,7 +387,7 @@ class AutoPackage(Directive):
             _, annotations = self.get_documentation(decl)
 
             # Skip documentation for this entity
-            if annotations.get('no-document'):
+            if annotations.get('private'):
                 continue
 
             if decl.is_a(lal.BasicSubpDecl, lal.ExprFunction):
