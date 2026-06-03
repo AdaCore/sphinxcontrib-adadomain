@@ -47,12 +47,12 @@ class AutoPackage(Directive):
 
     Here are the supported annotations:
 
-    * ``private``: when present, disable documentation for the current entity.
+    * ``exclude``: when present, disable documentation for the current entity.
 
     * ``belongs-to``: name of the type that must contain the documentation for
       the current entity.
 
-    * ``private-value``: when present, do not document the value corresponding
+    * ``exclude-value``: when present, do not document the value corresponding
       to object declarations (documented by default).
     """
 
@@ -65,9 +65,9 @@ class AutoPackage(Directive):
     }
 
     annotations = {
-        'private': bool,
+        'exclude': bool,
         'belongs-to': str,
-        'private-value': bool,
+        'exclude-value': bool,
     }
 
     def parse_into(self, doc, content_node):
@@ -217,7 +217,7 @@ class AutoPackage(Directive):
         node['objtype'] = node['desctype'] = 'object'
         name = decl.p_defining_name.text
 
-        if decl.f_default_expr and not annotations.get('private-value', False):
+        if decl.f_default_expr and not annotations.get('exclude-value', False):
             # If there is a default expression to describe, do it as an
             # additional description. The title will only contain the name up
             # to the type expression.
@@ -387,7 +387,7 @@ class AutoPackage(Directive):
             _, annotations = self.get_documentation(decl)
 
             # Skip documentation for this entity
-            if annotations.get('private'):
+            if annotations.get('exclude'):
                 continue
 
             if decl.is_a(lal.BasicSubpDecl, lal.ExprFunction):

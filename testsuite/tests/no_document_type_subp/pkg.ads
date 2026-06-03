@@ -1,7 +1,7 @@
 package Pkg is
 
    type Base_Node is null record;
-   --  @private
+   --  @exclude
 
    type My_Node is new Base_Node;
    --  A node type.
