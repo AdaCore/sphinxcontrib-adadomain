@@ -51,7 +51,7 @@ package Pkg is
    --  Documentation for Singleton
 
    Singleton2 : T := (1, 2, 3);
-   --  @private-value
+   --  @exclude-value
    --  Documentation for Singleton 2
 
    generic
@@ -74,6 +74,6 @@ package Pkg is
    end Nested_Package;
 
    function Dont_Document return Boolean is (True);
-   --  @private
+   --  @exclude
 
 end Pkg;

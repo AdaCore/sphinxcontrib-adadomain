@@ -67,12 +67,12 @@ class GenerateDoc(lal.App):
     """
 
     annotations = {
-        'private': bool,  # Don't document associated entity
+        'exclude': bool,  # Don't document associated entity
 
         'belongs-to': str,  # Attach associated entity to entity given in
                             # parameter
 
-        'private-value': bool,  # When present, don't document the value of an
+        'exclude-value': bool,  # When present, don't document the value of an
                                 # object decl (documented by default)
     }
 
@@ -191,7 +191,7 @@ class GenerateDoc(lal.App):
 
     def type_is_no_document(self, type_expr: lal.TypeExpr | None) -> bool:
         """Return True if the type referred to by `type_expr` carries a
-        `private` annotation."""
+        `exclude` annotation."""
         if type_expr is None:
             return False
         try:
@@ -201,7 +201,7 @@ class GenerateDoc(lal.App):
             return False
         if type_decl is not None:
             _, annots = self.get_documentation(type_decl)
-            return bool(annots.get('private'))
+            return bool(annots.get('exclude'))
         return False
 
     def main(self) -> None:
@@ -303,7 +303,7 @@ class GenerateDoc(lal.App):
             _, annotations = self.get_documentation(decl)
 
             # Skip documentation for this entity
-            if annotations.get('private'):
+            if annotations.get('exclude'):
                 continue
 
             if is_documentable_subp(decl):
@@ -541,7 +541,7 @@ class GenerateDoc(lal.App):
             default_expr = None
 
             if (decl.f_default_expr
-                    and not annotations.get('private-value', False)):
+                    and not annotations.get('exclude-value', False)):
                 # If there is a default expression to describe, do it as an
                 # additional description. The title will only contain the name
                 # up to the type expression.
