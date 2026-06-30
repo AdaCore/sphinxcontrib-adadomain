@@ -675,8 +675,9 @@ class AdaDomain(Domain):
             # understand. Ignore those cases:
             if not isinstance(contnode, nodes.Text):
                 contnode[0] = nodes.Text(target.split(".")[-1])
+            node_id = self.objects[name].node_id
             return make_refnode(
-                builder, fromdocname, obj, name, contnode, name
+                builder, fromdocname, obj, node_id, contnode, name
             )
 
     def get_objects(self) -> Iterator[Tuple[str, str, str, str, str, int]]:

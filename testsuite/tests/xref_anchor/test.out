@@ -1,0 +1,24 @@
+### pkg.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
+    <section ids="package-Pkg Pkg pkg" names="pkg">
+        <title>Pkg</title>
+        <index entries="['single',\ 'Pkg\ (package)',\ 'package-Pkg',\ 'Pkg',\ None]"></index>
+        <index entries="['single',\ 'Pkg.F1\ (Ada\ function)',\ 'Pkg.F1-Standard.Integer-return-Standard.Boolean',\ '',\ None]"></index>
+        <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Standard.Integer) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.F1" ids="Pkg.F1-Standard.Integer-return-Standard.Boolean" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">F1</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Integer</desc_sig_name></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
+            <desc_content>
+                <paragraph>Some doc.</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Pkg.F2\ (Ada\ function)',\ 'Pkg.F2-Standard.Character-return-Standard.Boolean',\ '',\ None]"></index>
+        <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Standard.Character) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.F2" ids="Pkg.F2-Standard.Character-return-Standard.Boolean" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">F2</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Character</desc_sig_name></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
+            <desc_content>
+                <paragraph>See <reference internal="True" refid="Pkg.F1-Standard.Integer-return-Standard.Boolean" reftitle="Pkg.F1(Standard.Integer) return Standard.Boolean"><literal classes="xref ada ada-ref">F1</literal></reference>.</paragraph>
+            </desc_content>
+        </desc>
+    </section>
+</document>
+
