@@ -35,7 +35,7 @@
                     <field>
                         <field_name>Instantiated generic subprogram</field_name>
                         <field_body>
-                            <paragraph><inline><reference internal="True" refid="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T" reftitle="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Identity-Pkg.Identity.T-return-Pkg.Identity.T" reftitle="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
                         </field_body>
                     </field>
                 </field_list>
@@ -51,7 +51,7 @@
                     <field>
                         <field_name>Instantiated generic subprogram</field_name>
                         <field_body>
-                            <paragraph><inline><reference internal="True" refid="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T" reftitle="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
+                            <paragraph><inline><reference internal="True" refid="Pkg.Identity-Pkg.Identity.T-return-Pkg.Identity.T" reftitle="Pkg.Identity(Pkg.Identity.T) return Pkg.Identity.T"><literal classes="xref ada ada-type">Identity</literal></reference></inline></paragraph>
                         </field_body>
                     </field>
                 </field_list>
