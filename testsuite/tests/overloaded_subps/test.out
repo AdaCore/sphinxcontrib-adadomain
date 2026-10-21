@@ -1,4 +1,4 @@
-### overloads.xml:
+### ada___overloads___spec.xml:
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
@@ -18,20 +18,20 @@
             <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Overloads.A" ids="Overloads.A" package="Overloads"><desc_annotation xml:space="preserve">type </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">A</desc_name><desc_type xml:space="preserve"></desc_type></desc_signature>
             <desc_content>
                 <paragraph>Type A</paragraph>
-                <index entries="['single',\ 'Overloads.Set\ (Ada\ procedure)',\ 'Overloads.Set-Overloads.A',\ '',\ None]"></index>
-                <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
-                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.A)" classes="sig sig-object ada sig sig-object" fullname="Overloads.Set" ids="Overloads.Set-Overloads.A" package="Overloads"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Set</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.A" reftitle="Overloads.A"><desc_sig_name classes="n n n">A</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
-                    <desc_content>
-                        <paragraph>Set with A</paragraph>
-                    </desc_content>
-                </desc>
-                <index entries="['single',\ 'Overloads.Get\ (Ada\ function)',\ 'Overloads.Get-Overloads.A-return-Overloads.R',\ '',\ None]"></index>
-                <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.A) return Overloads.R" classes="sig sig-object ada sig sig-object" fullname="Overloads.Get" ids="Overloads.Get-Overloads.A-return-Overloads.R" package="Overloads"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Get</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.A" reftitle="Overloads.A"><desc_sig_name classes="n n n">A</desc_sig_name></reference></desc_parameter></desc_parameterlist><reference internal="True" refid="Overloads.R" reftitle="Overloads.R"><desc_returns xml:space="preserve">R</desc_returns></reference></desc_signature>
-                    <desc_content>
-                        <paragraph>Get with A return R</paragraph>
-                    </desc_content>
-                </desc>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Overloads.Set\ (Ada\ procedure)',\ 'Overloads.Set-Overloads.A',\ '',\ None]"></index>
+        <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.A)" classes="sig sig-object ada sig sig-object" fullname="Overloads.Set" ids="Overloads.Set-Overloads.A" package="Overloads"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Set</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.A" reftitle="Overloads.A"><desc_sig_name classes="n n n">A</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
+            <desc_content>
+                <paragraph>Set with A</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Overloads.Get\ (Ada\ function)',\ 'Overloads.Get-Overloads.A-return-Overloads.R',\ '',\ None]"></index>
+        <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.A) return Overloads.R" classes="sig sig-object ada sig sig-object" fullname="Overloads.Get" ids="Overloads.Get-Overloads.A-return-Overloads.R" package="Overloads"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Get</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.A" reftitle="Overloads.A"><desc_sig_name classes="n n n">A</desc_sig_name></reference></desc_parameter></desc_parameterlist><reference internal="True" refid="Overloads.R" reftitle="Overloads.R"><desc_returns xml:space="preserve">R</desc_returns></reference></desc_signature>
+            <desc_content>
+                <paragraph>Get with A return R</paragraph>
             </desc_content>
         </desc>
         <index entries="['single',\ 'Overloads.B\ (Ada\ type)',\ 'Overloads.B',\ '',\ None]"></index>
@@ -39,20 +39,20 @@
             <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Overloads.B" ids="Overloads.B" package="Overloads"><desc_annotation xml:space="preserve">type </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">B</desc_name><desc_type xml:space="preserve"></desc_type></desc_signature>
             <desc_content>
                 <paragraph>Type B</paragraph>
-                <index entries="['single',\ 'Overloads.Set\ (Ada\ procedure)',\ 'Overloads.Set-Overloads.B',\ '',\ None]"></index>
-                <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
-                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.B)" classes="sig sig-object ada sig sig-object" fullname="Overloads.Set" ids="Overloads.Set-Overloads.B" package="Overloads"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Set</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.B" reftitle="Overloads.B"><desc_sig_name classes="n n n">B</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
-                    <desc_content>
-                        <paragraph>Set with B</paragraph>
-                    </desc_content>
-                </desc>
-                <index entries="['single',\ 'Overloads.Get\ (Ada\ function)',\ 'Overloads.Get-Overloads.B-return-Overloads.R',\ '',\ None]"></index>
-                <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.B) return Overloads.R" classes="sig sig-object ada sig sig-object" fullname="Overloads.Get" ids="Overloads.Get-Overloads.B-return-Overloads.R" package="Overloads"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Get</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.B" reftitle="Overloads.B"><desc_sig_name classes="n n n">B</desc_sig_name></reference></desc_parameter></desc_parameterlist><reference internal="True" refid="Overloads.R" reftitle="Overloads.R"><desc_returns xml:space="preserve">R</desc_returns></reference></desc_signature>
-                    <desc_content>
-                        <paragraph>Get with B return R</paragraph>
-                    </desc_content>
-                </desc>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Overloads.Set\ (Ada\ procedure)',\ 'Overloads.Set-Overloads.B',\ '',\ None]"></index>
+        <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.B)" classes="sig sig-object ada sig sig-object" fullname="Overloads.Set" ids="Overloads.Set-Overloads.B" package="Overloads"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Set</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.B" reftitle="Overloads.B"><desc_sig_name classes="n n n">B</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
+            <desc_content>
+                <paragraph>Set with B</paragraph>
+            </desc_content>
+        </desc>
+        <index entries="['single',\ 'Overloads.Get\ (Ada\ function)',\ 'Overloads.Get-Overloads.B-return-Overloads.R',\ '',\ None]"></index>
+        <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Overloads.B) return Overloads.R" classes="sig sig-object ada sig sig-object" fullname="Overloads.Get" ids="Overloads.Get-Overloads.B-return-Overloads.R" package="Overloads"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Get</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">X</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Overloads.B" reftitle="Overloads.B"><desc_sig_name classes="n n n">B</desc_sig_name></reference></desc_parameter></desc_parameterlist><reference internal="True" refid="Overloads.R" reftitle="Overloads.R"><desc_returns xml:space="preserve">R</desc_returns></reference></desc_signature>
+            <desc_content>
+                <paragraph>Get with B return R</paragraph>
             </desc_content>
         </desc>
     </section>

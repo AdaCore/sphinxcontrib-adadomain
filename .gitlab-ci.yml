@@ -18,7 +18,7 @@ wheels:
   script:
     - generic_anod_ci
     - . /tmp/ci_env.sh
-    - anod test laldoc $ACI_TRACK_QUALIFIER
+    - anod test sphinxcontrib-adadomain $ACI_TRACK_QUALIFIER
     - testsuite_reports
   artifacts:
     reports:

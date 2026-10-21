@@ -10,7 +10,6 @@ import subprocess
 from e3.testsuite import Testsuite
 from e3.testsuite.driver.diff import DiffTestDriver
 from e3.fs import sync_tree
-from e3.sys import interpreter
 
 TESTSUITE_DIR = P.abspath(P.join(P.dirname(P.abspath(__file__))))
 
@@ -42,18 +41,15 @@ Indices and tables
 """
 
 
-class BaseDocDriver(DiffTestDriver):
+def gnatdoc_command(project_file: str) -> list[str]:
     """
-    Base driver for laldoc/sphinxcontrib-adadomain modules
+    Return the command line to generate RST files for ``project_file`` with
+    gnatdoc in the current directory.
     """
-
-    def python_interpreter(self) -> str:
-        return (interpreter(self.env.options.python_prefix)
-                if self.env.options.python_prefix
-                else "python")
+    return ["gnatdoc", "--backend", "rstpt", "-P", project_file, "-O", "."]
 
 
-class GendocDriver(BaseDocDriver):
+class GendocDriver(DiffTestDriver):
     """
     Driver to test doc generation.
 
@@ -81,15 +77,9 @@ class GendocDriver(BaseDocDriver):
         # Generate rst if needed
         if self.env.options.regenerate_rst:
             self.shell(
-                [
-                    self.python_interpreter(),
-                    "-m",
-                    "laldoc.generate_rst",
-                    "-P",
-                    self.test_env.get("project_file", "prj/prj.gpr"),
-                    "-O",
-                    ".",
-                ],
+                gnatdoc_command(
+                    self.test_env.get("project_file", "prj/prj.gpr")
+                ),
                 cwd=self.test_env["test_dir"],
                 analyze_output=False,
             )
@@ -109,11 +99,13 @@ class GendocDriver(BaseDocDriver):
         with open(P.join(self.test_env["working_dir"], "conf.py"), "w") as f:
             f.write(CONF_PY_TEMPLATE)
 
-        rst_files = glob.glob(P.join(self.test_env["working_dir"], "*.rst"))
+        rst_files = sorted(
+            glob.glob(P.join(self.test_env["working_dir"], "*.rst"))
+        )
 
         with open(P.join(self.test_env["working_dir"], "index.rst"), "w") as f:
             f.write(INDEX_RST_TEMPLATE.format(
-                "    \n".join([P.basename(r) for r in rst_files])
+                "\n   ".join([P.basename(r) for r in rst_files])
             ))
 
         self.shell(
@@ -127,8 +119,8 @@ class GendocDriver(BaseDocDriver):
                 env=self.derived_env,
             )
 
-        for xmlf in glob.glob(
-            P.join(self.test_env["working_dir"], "out", "*.xml")
+        for xmlf in sorted(
+            glob.glob(P.join(self.test_env["working_dir"], "out", "*.xml"))
         ):
             # Skip index.xml
             if not P.basename(xmlf) == "index.xml":
@@ -147,9 +139,9 @@ class GendocDriver(BaseDocDriver):
                     self.output += "\n"
 
 
-class LALDocDriver(BaseDocDriver):
+class GNATdocDriver(DiffTestDriver):
     """
-    Driver to check the RST output of laldoc when run on a source file.
+    Driver to check the RST output of gnatdoc when run on a source file.
     """
 
     def run(self) -> None:
@@ -157,16 +149,8 @@ class LALDocDriver(BaseDocDriver):
         with open(self.working_dir("p.gpr"), "w") as f:
             f.write("project P is end P;")
 
-        # Run laldoc on that project
-        self.shell(
-            [
-                self.python_interpreter(),
-                "-m",
-                "laldoc.generate_rst",
-                "-P",
-                "p.gpr"
-            ]
-        )
+        # Run gnatdoc on that project
+        self.shell(gnatdoc_command("p.gpr"))
 
         # Consider all generate RST files for the test baseline
         for i, filename in enumerate(
@@ -184,13 +168,13 @@ class AdaDomainTest(Testsuite):
     Testsuite for sphinxcontrib-adadomain
     """
     tests_subdir = "tests"
-    test_driver_map = {"gen-doc": GendocDriver, "laldoc": LALDocDriver}
+    test_driver_map = {"gen-doc": GendocDriver, "gnatdoc": GNATdocDriver}
     default_driver = "gen-doc"
 
     def add_options(self, parser):
         parser.add_argument(
             "--regenerate-rst", action="store_true",
-            help="Run laldoc's generate_rst prior to running the tests."
+            help="Run gnatdoc's RST backend prior to running the tests."
         )
         parser.add_argument(
             "--rewrite", "-r", action="store_true",
@@ -208,8 +192,8 @@ class AdaDomainTest(Testsuite):
         parser.add_argument(
             "--python-prefix",
             help="Installation prefix for the Python distribution that"
-            " provides Sphinx, sphinxcontrib-adadomain and laldoc. If"
-            " omitted, assume they are available in the environment.",
+            " provides Sphinx and sphinxcontrib-adadomain. If omitted,"
+            " assume they are available in the environment.",
         )
 
     def set_up(self):

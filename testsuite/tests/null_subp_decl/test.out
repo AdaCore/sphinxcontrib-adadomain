@@ -1,13 +1,15 @@
-== pkg.rst ==
+== ada___pkg___spec.rst ==
 
 
 Pkg
----
+*****
 
 .. ada:set_package:: Pkg
+
 
 
 .. ada:procedure:: procedure Test
     :package: Pkg
 
     This is a null procedure!
+
