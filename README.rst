@@ -10,8 +10,7 @@ About
 
 This extension adds Ada domain support to Sphinx. While you can write files
 documenting Ada code manually with this domain, it is mostly meant to be used
-together with the laldoc documentation generator, which is part of
-`Libadalang`_.
+together with the RST backend of the `GNATdoc`_ documentation generator.
 
 This extension requires Python 3.7 minimum.
 
@@ -153,4 +152,5 @@ This directive is used to document types. You use it like this::
 
 :field types: ``discriminant``, ``component``
 
+.. _GNATdoc: https://github.com/AdaCore/gnatdoc
 .. _Libadalang: https://github.com/AdaCore/libadalang

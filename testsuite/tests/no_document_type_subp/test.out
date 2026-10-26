@@ -1,24 +1,45 @@
-== pkg.rst ==
+== ada___pkg___spec.rst ==
 
 
 Pkg
----
+*****
 
 .. ada:set_package:: Pkg
+
+
+
+.. ada:type:: type Base_Node
+    :package: Pkg
+
+    @exclude
 
 
 .. ada:type:: type My_Node
     :package: Pkg
 
-
     A node type.
 
-    .. ada:function:: function Get (Self : Pkg.My_Node) return Pkg.My_Node
-        :package: Pkg
 
-        Get a node.
+.. ada:function:: function Get (Self : Pkg.My_Node) return Pkg.My_Node
+    :package: Pkg
 
-    .. ada:procedure:: procedure Set (Self : Pkg.My_Node)
-        :package: Pkg
+    Get a node.
 
-        Set a node.
+
+.. ada:function:: function Get (Self : Pkg.My_Node) return Pkg.Base_Node
+    :package: Pkg
+
+    Should not appear in the documentation.
+
+
+.. ada:procedure:: procedure Set (Self : Pkg.My_Node)
+    :package: Pkg
+
+    Set a node.
+
+
+.. ada:procedure:: procedure Set (Self : Pkg.Base_Node)
+    :package: Pkg
+
+    Should not appear in the documentation.
+

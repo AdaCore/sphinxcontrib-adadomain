@@ -1,10 +1,11 @@
-== pkg.rst ==
+== ada___pkg___spec.rst ==
 
 
 Pkg
----
+*****
 
 .. ada:set_package:: Pkg
+
 
 
 .. ada:type:: type R
@@ -16,3 +17,4 @@ Pkg
         Doc for component B
 
     Doc for record type R
+

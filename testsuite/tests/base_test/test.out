@@ -1,4 +1,5 @@
-### pkg.xml:
+duplicate object description of Pkg.Nested_Package.Barize(Pkg.T,Pkg.U) return Standard.Boolean, other instance in ada___pkg___spec, use :noindex: for one of them
+### ada___pkg___spec.xml:
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
@@ -52,63 +53,6 @@
                         </field>
                     </field_list>
                     <paragraph>Documentation for record T</paragraph>
-                    <index entries="['single',\ 'Pkg.Foo\ (Ada\ procedure)',\ 'Pkg.Foo-Pkg.T',\ '',\ None]"></index>
-                    <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
-                        <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T)" classes="sig sig-object ada sig sig-object" fullname="Pkg.Foo" ids="Pkg.Foo-Pkg.T" package="Pkg"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Foo</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
-                        <desc_content>
-                        </desc_content>
-                    </desc>
-                    <index entries="['single',\ 'Pkg.Create\ (Ada\ function)',\ 'Pkg.Create-Standard.Integer-Standard.Integer-Standard.Integer-return-Pkg.T',\ '',\ None]"></index>
-                    <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                        <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Standard.Integer,Standard.Integer,Standard.Integer) return Pkg.T" classes="sig sig-object ada sig sig-object" fullname="Pkg.Create" ids="Pkg.Create-Standard.Integer-Standard.Integer-Standard.Integer-return-Pkg.T" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Create</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">A</desc_sig_name><desc_sig_punctuation classes="p p">, </desc_sig_punctuation><desc_sig_name classes="n n">B</desc_sig_name><desc_sig_punctuation classes="p p">, </desc_sig_punctuation><desc_sig_name classes="n n">C</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Integer</desc_sig_name></desc_parameter></desc_parameterlist><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_returns xml:space="preserve">T</desc_returns></reference></desc_signature>
-                        <desc_content>
-                            <paragraph>Constructor function for <reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-ref">T</literal></reference></paragraph>
-                        </desc_content>
-                    </desc>
-                    <index entries="['single',\ 'Pkg.Poo\ (Ada\ function)',\ 'Pkg.Poo-Pkg.T-return-Standard.Boolean',\ '',\ None]"></index>
-                    <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                        <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.Poo" ids="Pkg.Poo-Pkg.T-return-Standard.Boolean" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Poo</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
-                        <desc_content>
-                            <paragraph>Check whether the <literal>@</literal> shortcut syntax is handled correctly by
-                                referencing <literal classes="xref ada ada-ref">U.D</literal></paragraph>
-                        </desc_content>
-                    </desc>
-                    <index entries=""></index>
-                    <desc classes="ada object" desctype="object" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="object">
-                        <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Singleton" ids="Pkg.Singleton" package="Pkg"><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Singleton</desc_name><desc_annotation xml:space="preserve"> : T</desc_annotation><desc_type xml:space="preserve"></desc_type></desc_signature>
-                        <desc_content>
-                            <field_list>
-                                <field>
-                                    <field_name>Object type</field_name>
-                                    <field_body>
-                                        <paragraph><inline><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-type">T</literal></reference></inline></paragraph>
-                                    </field_body>
-                                </field>
-                                <field>
-                                    <field_name>Default value</field_name>
-                                    <field_body>
-                                        <paragraph><literal>(1, 2, 3)</literal></paragraph>
-                                    </field_body>
-                                </field>
-                            </field_list>
-                            <paragraph>Documentation for Singleton</paragraph>
-                        </desc_content>
-                    </desc>
-                    <index entries=""></index>
-                    <desc classes="ada object" desctype="object" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="object">
-                        <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Singleton2" ids="Pkg.Singleton2" package="Pkg"><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Singleton2</desc_name><desc_annotation xml:space="preserve"> : T</desc_annotation><desc_type xml:space="preserve"></desc_type></desc_signature>
-                        <desc_content>
-                            <field_list>
-                                <field>
-                                    <field_name>Object type</field_name>
-                                    <field_body>
-                                        <paragraph><inline><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-type">T</literal></reference></inline></paragraph>
-                                    </field_body>
-                                </field>
-                            </field_list>
-                            <paragraph>Documentation for Singleton 2</paragraph>
-                        </desc_content>
-                    </desc>
                 </desc_content>
             </desc>
             <index entries="['single',\ 'Pkg.U\ (Ada\ type)',\ 'Pkg.U',\ '',\ None]"></index>
@@ -133,42 +77,63 @@
                             </field_body>
                         </field>
                     </field_list>
-                    <index entries="['single',\ 'Pkg.Primitive_Of_Both\ (Ada\ procedure)',\ 'Pkg.Primitive_Of_Both-Pkg.T-Pkg.U',\ '',\ None]"></index>
-                    <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
-                        <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T,Pkg.U)" classes="sig sig-object ada sig sig-object" fullname="Pkg.Primitive_Of_Both" ids="Pkg.Primitive_Of_Both-Pkg.T-Pkg.U" package="Pkg"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Primitive_Of_Both</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Other</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><desc_sig_name classes="n n n">U</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
-                        <desc_content>
-                            <paragraph>This is a primitive of both types. We want to test that thanks to the
-                                <literal>belongs-to</literal> annotation, it is correctly attached to <reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><literal classes="xref ada ada-ref">U</literal></reference>.</paragraph>
-                        </desc_content>
-                    </desc>
+                </desc_content>
+            </desc>
+            <index entries="['single',\ 'Pkg.Foo\ (Ada\ procedure)',\ 'Pkg.Foo-Pkg.T',\ '',\ None]"></index>
+            <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
+                <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T)" classes="sig sig-object ada sig sig-object" fullname="Pkg.Foo" ids="Pkg.Foo-Pkg.T" package="Pkg"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Foo</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
+                <desc_content>
+                </desc_content>
+            </desc>
+            <index entries="['single',\ 'Pkg.Create\ (Ada\ function)',\ 'Pkg.Create-Standard.Integer-Standard.Integer-Standard.Integer-return-Pkg.T',\ '',\ None]"></index>
+            <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+                <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Standard.Integer,Standard.Integer,Standard.Integer) return Pkg.T" classes="sig sig-object ada sig sig-object" fullname="Pkg.Create" ids="Pkg.Create-Standard.Integer-Standard.Integer-Standard.Integer-return-Pkg.T" package="Pkg"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Create</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">A</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Integer</desc_sig_name></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">B</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Integer</desc_sig_name></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">C</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><desc_sig_name classes="n n n">Standard.Integer</desc_sig_name></desc_parameter></desc_parameterlist><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_returns xml:space="preserve">T</desc_returns></reference></desc_signature>
+                <desc_content>
+                    <paragraph>Constructor function for <reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-ref">T</literal></reference></paragraph>
+                </desc_content>
+            </desc>
+            <index entries="['single',\ 'Pkg.Primitive_Of_Both\ (Ada\ procedure)',\ 'Pkg.Primitive_Of_Both-Pkg.T-Pkg.U',\ '',\ None]"></index>
+            <desc classes="ada procedure" desctype="procedure" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="procedure">
+                <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T,Pkg.U)" classes="sig sig-object ada sig sig-object" fullname="Pkg.Primitive_Of_Both" ids="Pkg.Primitive_Of_Both-Pkg.T-Pkg.U" package="Pkg"><desc_annotation xml:space="preserve">procedure </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Primitive_Of_Both</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Other</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><desc_sig_name classes="n n n">U</desc_sig_name></reference></desc_parameter></desc_parameterlist></desc_signature>
+                <desc_content>
+                    <paragraph>This is a primitive of both types. We want to test that thanks to the
+                        <literal>belongs-to</literal> annotation, it is correctly attached to <reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><literal classes="xref ada ada-ref">U</literal></reference>.</paragraph>
                 </desc_content>
             </desc>
             <index entries=""></index>
-            <desc classes="ada generic-package" desctype="generic-package" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="generic-package">
-                <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Pkg.Gen_Package" ids="Pkg.Pkg.Gen_Package" package="Pkg"><desc_annotation xml:space="preserve">generic package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Pkg.Gen_Package</desc_name></desc_signature>
+            <desc classes="ada object" desctype="object" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="object">
+                <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Singleton" ids="Pkg.Singleton" package="Pkg"><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Singleton</desc_name><desc_annotation xml:space="preserve"> : Pkg.T</desc_annotation><desc_type xml:space="preserve"></desc_type></desc_signature>
                 <desc_content>
-                    <paragraph>Documentation for Singleton 2</paragraph>
                     <field_list>
                         <field>
-                            <field_name>Formals</field_name>
+                            <field_name>Object type</field_name>
                             <field_body>
-                                <index entries="['single',\ 'Pkg.Gen_Package.F\ (Ada\ type)',\ 'Pkg.Gen_Package.F',\ '',\ None]"></index>
-                                <desc classes="ada type" desctype="type" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="type">
-                                    <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Gen_Package.F" ids="Pkg.Gen_Package.F" package="Pkg.Gen_Package"><desc_annotation xml:space="preserve">type </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">F</desc_name><desc_type xml:space="preserve"></desc_type></desc_signature>
-                                    <desc_content>
-                                        <paragraph>The main type for this generic package</paragraph>
-                                    </desc_content>
-                                </desc>
-                                <index entries="['single',\ 'Pkg.Gen_Package.Frobulize\ (Ada\ function)',\ 'Pkg.Gen_Package.Frobulize-Pkg.Gen_Package.F-return-Standard.Boolean',\ '',\ None]"></index>
-                                <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.Gen_Package.F) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.Gen_Package.Frobulize" ids="Pkg.Gen_Package.Frobulize-Pkg.Gen_Package.F-return-Standard.Boolean" package="Pkg.Gen_Package"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Frobulize</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Self</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.Gen_Package.F" reftitle="Pkg.Gen_Package.F"><desc_sig_name classes="n n n">F</desc_sig_name></reference></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
-                                    <desc_content>
-                                        <paragraph>A way to frobulize instances</paragraph>
-                                    </desc_content>
-                                </desc>
+                                <paragraph><inline><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-type">T</literal></reference></inline></paragraph>
+                            </field_body>
+                        </field>
+                        <field>
+                            <field_name>Default value</field_name>
+                            <field_body>
+                                <paragraph><literal>(1, 2, 3)</literal></paragraph>
                             </field_body>
                         </field>
                     </field_list>
+                    <paragraph>Documentation for Singleton</paragraph>
+                </desc_content>
+            </desc>
+            <index entries=""></index>
+            <desc classes="ada object" desctype="object" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="object">
+                <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Singleton2" ids="Pkg.Singleton2" package="Pkg"><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Singleton2</desc_name><desc_annotation xml:space="preserve"> : Pkg.T</desc_annotation><desc_type xml:space="preserve"></desc_type></desc_signature>
+                <desc_content>
+                    <field_list>
+                        <field>
+                            <field_name>Object type</field_name>
+                            <field_body>
+                                <paragraph><inline><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><literal classes="xref ada ada-type">T</literal></reference></inline></paragraph>
+                            </field_body>
+                        </field>
+                    </field_list>
+                    <paragraph>Documentation for Singleton 2</paragraph>
                 </desc_content>
             </desc>
             <index entries=""></index>
@@ -182,17 +147,47 @@
             <desc classes="ada package" desctype="package" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="package">
                 <desc_signature _toc_name="" _toc_parts="" classes="sig sig-object ada sig sig-object" fullname="Pkg.Pkg.Nested_Package" ids="Pkg.Pkg.Nested_Package" package="Pkg"><desc_annotation xml:space="preserve">package </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Pkg.Nested_Package</desc_name></desc_signature>
                 <desc_content>
-                    <paragraph>This is a nested package</paragraph>
-                    <index entries="['single',\ 'Pkg.Nested_Package.Barize\ (Ada\ function)',\ 'Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean',\ '',\ None]"></index>
-                    <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
-                        <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T,Pkg.U) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.Nested_Package.Barize" ids="Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean" package="Pkg.Nested_Package"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Barize</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Other_Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><desc_sig_name classes="n n n">U</desc_sig_name></reference></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
-                        <desc_content>
-                            <paragraph>Barize the items</paragraph>
-                        </desc_content>
-                    </desc>
                 </desc_content>
             </desc>
+            <paragraph>This is a nested package</paragraph>
+            <block_quote>
+                <index entries="['single',\ 'Pkg.Nested_Package.Barize\ (Ada\ function)',\ 'Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean',\ '',\ None]"></index>
+                <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+                    <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T,Pkg.U) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.Nested_Package.Barize" ids="Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean" package="Pkg.Nested_Package"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Barize</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.T" reftitle="Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Other_Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" refid="Pkg.U" reftitle="Pkg.U"><desc_sig_name classes="n n n">U</desc_sig_name></reference></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
+                    <desc_content>
+                        <paragraph>Barize the items</paragraph>
+                    </desc_content>
+                </desc>
+            </block_quote>
         </section>
+    </section>
+</document>
+
+### ada___pkg__gen_package___spec.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
+    <section ids="package-Pkg.Gen_Package Pkg.Gen_Package pkg-gen-package" names="pkg.gen_package">
+        <title>Pkg.Gen_Package</title>
+        <index entries="['single',\ 'Pkg.Gen_Package\ (package)',\ 'package-Pkg.Gen_Package',\ 'Pkg.Gen_Package',\ None]"></index>
+    </section>
+</document>
+
+### ada___pkg__nested_package___spec.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE document PUBLIC "+//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML" "http://docutils.sourceforge.net/docs/ref/docutils.dtd">
+    <section ids="package-Pkg.Nested_Package Pkg.Nested_Package pkg-nested-package" names="pkg.nested_package">
+        <title>Pkg.Nested_Package</title>
+        <index entries="['single',\ 'Pkg.Nested_Package\ (package)',\ 'package-Pkg.Nested_Package',\ 'Pkg.Nested_Package',\ None]"></index>
+        <paragraph>This is a nested package</paragraph>
+        <index entries="['single',\ 'Pkg.Nested_Package.Barize\ (Ada\ function)',\ 'Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean',\ '',\ None]"></index>
+        <desc classes="ada function" desctype="function" domain="ada" nocontentsentry="False" noindex="False" noindexentry="False" objtype="function">
+            <desc_signature _toc_name="" _toc_parts="" ada:sig_key="(Pkg.T,Pkg.U) return Standard.Boolean" classes="sig sig-object ada sig sig-object" fullname="Pkg.Nested_Package.Barize" ids="Pkg.Nested_Package.Barize-Pkg.T-Pkg.U-return-Standard.Boolean" package="Pkg.Nested_Package"><desc_annotation xml:space="preserve">function </desc_annotation><desc_name classes="sig-name descname sig-name descname" xml:space="preserve">Barize</desc_name> <desc_parameterlist xml:space="preserve"><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" reftitle="Pkg.T" refuri="ada___pkg___spec#Pkg.T"><desc_sig_name classes="n n n">T</desc_sig_name></reference></desc_parameter><desc_parameter xml:space="preserve"><desc_sig_name classes="n n">Other_Inst</desc_sig_name><desc_sig_punctuation classes="p p"> : </desc_sig_punctuation><reference internal="True" reftitle="Pkg.U" refuri="ada___pkg___spec#Pkg.U"><desc_sig_name classes="n n n">U</desc_sig_name></reference></desc_parameter></desc_parameterlist><desc_returns xml:space="preserve">Standard.Boolean</desc_returns></desc_signature>
+            <desc_content>
+                <paragraph>Barize the items</paragraph>
+            </desc_content>
+        </desc>
     </section>
 </document>
 

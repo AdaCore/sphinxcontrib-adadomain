@@ -38,10 +38,6 @@ package Pkg is
    function Create (A, B, C : Integer) return T;
    --  Constructor function for :ada:ref:`T`
 
-   function Poo (Self : T) return Boolean;
-   --  Check whether the ``@`` shortcut syntax is handled correctly by
-   --  referencing @U.D
-
    procedure Primitive_Of_Both (Self : T; Other : U);
    --  @belongs-to U
    --  This is a primitive of both types. We want to test that thanks to the

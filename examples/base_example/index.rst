@@ -7,8 +7,9 @@ Contents:
 .. toctree::
    :numbered:
    :maxdepth: 3
+   :glob:
 
-   pkg.rst
+   ada___*
 
 Indices and tables
 ==================
