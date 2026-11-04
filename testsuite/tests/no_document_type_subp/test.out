@@ -8,12 +8,6 @@ Pkg
 
 
 
-.. ada:type:: type Base_Node
-    :package: Pkg
-
-    @exclude
-
-
 .. ada:type:: type My_Node
     :package: Pkg
 
